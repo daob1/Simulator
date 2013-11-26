@@ -1,68 +1,79 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-	<jsp:directive.page language="java"
-		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
-	<jsp:text>
-		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
-	</jsp:text>
-	<jsp:text>
-		<![CDATA[ <!DOCTYPE html> ]]>
-	</jsp:text>
-	<html>
+    <jsp:directive.page language="java"
+        contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
+    <jsp:text>
+        <![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
+    </jsp:text>
+    <jsp:text>
+        <![CDATA[ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> ]]>
+    </jsp:text>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<title>Place Devices</title>
-
+<title>Configure Rules</title>
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
 <!-- <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script> -->
 
-<script type="text/javascript"
+<!-- <script type="text/javascript"
     src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 <script type="text/javascript"
-    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script> -->
 </head>
 <body>
-	<script>
-		$("#draggable")
-		.resizable()
-		.draggable();
-	</script>
-	<script>$('#resizeDiv')
-    .resizable({
-        start: function(e, ui) {
-            alert('resizing started');
-        },
-        resize: function(e, ui) {
-         
-        },
-        stop: function(e, ui) {
-            alert('resizing stopped');
-        }
-    });</script>
-	<div class="container">
+
+<div class="container">
 		<div class="row">
 			<div class="col-md-3">
-				<h2>Place Devices</h2>
-				<div id="draggable"><p>Drag This</p></div>
-				
-				<div id="resizeDiv"><p>There seems to be a conflict with JQuery and bootstrap</p></div>
-				
+			<h2>Configure Rules</h2>
 
-				<div class="btn-group">
-					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
-					<a href="ConfigureRules.jsp" type="button" class="btn btn-success ">Configure Rules</a> 
+				
+				<div>
+					<button id="more_fields" onclick="add_fields()" type="button"
+						class="btn btn-info btn-block">Add a rule</button>
+				</div>
+
+				<div id="rule_fields">
+
+					<form class="form-group">
+						<label for="device_description">Rule Description</label> <input
+							type="text" class="form-control"  />
+					What do you want to happen
+
+						<label for="select_device">Select device</label>
+						<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle"
+							data-toggle="dropdown">
+							Device <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">Action</a>
+							</li>
+							<li><a href="#">Another action</a>
+							</li>
+							<li><a href="#">Something else here</a>
+							</li>
+							<li class="divider"></li>
+							<li><a href="#">Separated link</a>
+							</li>
+						</ul>
+					</div>
+					</form>
+					
+					<div class="btn-group">
+					<a href="PlaceDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
+					<a href="Information.html" type="button" class="btn btn-success ">Done</a> 
 			    </div>
+				</div>
+
+
+
+
 			</div>
-
-
-
-
-
-
+			
 			<div class="col-md-9">
 				<div class="row">
 					<canvas id="myCanvas" width="800" height="600"> Your
@@ -94,7 +105,7 @@
 						</div>
 					</div>
 					<div class="col-md-2">
-						<div class="panel panel-primary">
+						<div class="panel panel-success">
 							<div class="panel-heading">
 								<h3>
 									Step 2<span class="glyphicon glyphicon-th-large"></span>
@@ -109,7 +120,7 @@
 
 
 					<div class="col-md-2">
-						<div class="panel panel-default">
+						<div class="panel panel-primary">
 							<div class="panel-heading">
 								<h3>
 									Step 3<span class="glyphicon glyphicon-wrench"></span>
@@ -149,6 +160,12 @@
 		</div>
 	</div>
 
+
+
+
+
+
+
 </body>
-	</html>
+</html>
 </jsp:root>

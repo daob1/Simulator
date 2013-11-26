@@ -12,15 +12,24 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <script>
+
 	var DeviceCount = 1;
-function add_fields() {
-	DeviceCount++
-	var deviceForms =document.getElementById("device_fields").firstChild;
-	var cln=deviceForms.cloneNode(true);
-	deviceForms.parentNode.appendChild(cln);
 	
+function add_fields() {
+	DeviceCount++;
+	var deviceForm =document.getElementById("device_fields").firstChild;
+	var deviceFields =document.getElementById("device_fields");
+	var p=document.createElement("legend");
+	var newDeviceForm=deviceForm.cloneNode(true);
+	var removeBtnDiv = document.createElement("div");
+	var removeBtn = removeBtnDiv.innerHTML='<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove device </button>';
+	p.innerHTML=("Device number:" + DeviceCount);
+	newDeviceForm.insertBefore(removeBtnDiv, newDeviceForm.firstChild);
+	newDeviceForm.insertBefore(p, newDeviceForm.firstChild);
+	deviceForm.parentNode.appendChild(newDeviceForm);
 		}
-	</script>
+		
+</script>
 <title>Create Devices</title>
 
 <!-- Bootstrap -->
@@ -34,47 +43,73 @@ function add_fields() {
 		<div class="row">
 			<div class="col-md-3">
 				<div data-spy="scroll" data-target="#">
-				    <h2>Create Devices</h2>
-				    
-					<form class="form-group" role="form">
+					<h2>Create Devices</h2>
+
+					<form class="form-group">
 
 						<label for="inhabitant_name"> Patient Name </label> <input
-							type="text" class="form-control" name="inhabitant_name" maxlength="25"></input> <label
-							for="care_plan">Care Plan </label> <input type="text"
-							class="form-control" name="care_plan" maxlength="200"/> <label for="comment">
-							Comment </label> <input type="text" class="form-control" name="comment" maxlength="200"/>
+							type="text" class="form-control" name="inhabitant_name"
+							maxlength="25"></input> <label for="care_plan">Care Plan
+						</label> <input type="text" class="form-control" name="care_plan"
+							maxlength="200" /> <label for="comment"> Comment </label> <input
+							type="text" class="form-control" name="comment" maxlength="200" />
 						<label for="location_description">Location Description </label> <input
-							type="text" class="form-control" name="location_description" maxlength="25"/>
+							type="text" class="form-control" name="location_description"
+							maxlength="25" />
 
 					</form>
 					<div>
-						<button id="more_fields" onclick="add_fields()" type="button" class="btn btn-info btn-block">Add another
-							device</button>
+						<button id="more_fields" onclick="add_fields()" type="button"
+							class="btn btn-info btn-block">Add another device</button>
+					</div>
+
+					<div id="device_fields">
+
+						<form class="form-group" >
+							    <label for="device_description">Device Description</label> 
+							    <input type="text" class="form-control" name="device_description" /> 
+								<label for="device_units">Device Units</label>
+							<div class="input-group">
+								<div class="input-group-btn">
+									<button type="button" class="btn btn-default dropdown-toggle"
+										data-toggle="dropdown">
+										On/Off <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" role="menu">
+										<li><a href="#">On/Off</a>
+										</li>
+										<li><a href="#">Active/InActive</a>
+										</li>
+										<li><a href="#">Numerical</a>
+										</li>
+										<li><a href="#">Custom</a></li>
+									</ul>
+								</div><!-- /btn-group -->
+								<input type="text" class="form-control" name="device_units"/>
+							</div><!-- /input-group -->
+							
+								<label for="initial_value">Initial Value</label> 
+								<input type="text" class="form-control" name="initial_value" />
+						</form>
+
 					</div>
 					
-                    <div id="device_fields">
-                   
-					<form class="form-group" role="form">
-						<label for="device_description">Device description</label> <input
-							type="text" class="form-control" name="device_description" /> <label
-							for="device_units">Device units</label> <input type="text"
-							class="form-control" name="device_units" /> <label
-							for="initial_value">Initial Value</label> <input type="text"
-							class="form-control" name="initial_value" />
-					</form>
-					
-					</div>
-					
-				</div>
+                 <div class="form-group">
+                 <legend>Load a data set</legend>
+						<input type="file" class="form-control" placeholder="Load a data set"></input>
+				</div> 
+				
 				<div class="btn-group">
+					<a href="Information.html" type="button" class="btn btn-info ">Back to Information</a> 
 					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " value="Done">Done</a>
-					<button type="button" class="btn btn-info" >Load a data set</button>
+					<!-- <input type="file"><button name="Load_a_data_set" class="btn btn-info">Load a data set</button></input> -->
 				</div>
+			     </div>
+			     
 			</div>
 			<div class="col-md-9">
 				<div class="row">
-					<canvas id="myCanvas" width="800" height="600"
-						style="border:1px solid #c3c3c3;"> Your browser does not
+					<canvas id="myCanvas" width="800" height="600"> Your browser does not
 					support the HTML5 canvas tag. </canvas>
 				</div>
 				<script>
@@ -151,10 +186,10 @@ function add_fields() {
 			</div>
 		</div>
     </div>
-
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://code.jquery.com/jquery.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	
 	
 </body>
 	</html>
