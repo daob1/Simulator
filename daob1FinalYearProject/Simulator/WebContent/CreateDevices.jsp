@@ -1,41 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-	<jsp:directive.page language="java"
-		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
-	<jsp:text>
-		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
-	</jsp:text>
-	<jsp:text>
-		<![CDATA[ <!DOCTYPE html> ]]>
-	</jsp:text>
-	<html>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<script>
-
-	var DeviceCount = 1;
-	
-function add_fields() {
-	DeviceCount++;
-	var deviceForm =document.getElementById("device_fields").firstChild;
-	var deviceFields =document.getElementById("device_fields");
-	var p=document.createElement("legend");
-	var newDeviceForm=deviceForm.cloneNode(true);
-	var removeBtnDiv = document.createElement("div");
-	var removeBtn = removeBtnDiv.innerHTML='<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove device </button>';
-	p.innerHTML=("Device number:" + DeviceCount);
-	newDeviceForm.insertBefore(removeBtnDiv, newDeviceForm.firstChild);
-	newDeviceForm.insertBefore(p, newDeviceForm.firstChild);
-	deviceForm.parentNode.appendChild(newDeviceForm);
-		}
-		
-</script>
-<title>Create Devices</title>
 
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
 
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 
 </head>
 <body>
@@ -64,8 +39,8 @@ function add_fields() {
 					</div>
 
 					<div id="device_fields">
-
-						<form class="form-group" >
+                        <div>
+						<form class="form-group" id="device_form">
 							    <label for="device_description">Device Description</label> 
 							    <input type="text" class="form-control" name="device_description" /> 
 								<label for="device_units">Device Units</label>
@@ -91,17 +66,17 @@ function add_fields() {
 								<label for="initial_value">Initial Value</label> 
 								<input type="text" class="form-control" name="initial_value" />
 						</form>
-
+                        </div>
 					</div>
 					
                  <div class="form-group">
-                 <legend>Load a data set</legend>
+            <!--      <legend>Load a data set</legend> -->
 						<input type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
 				
 				<div class="btn-group">
 					<a href="Information.html" type="button" class="btn btn-info ">Back to Information</a> 
-					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " value="Done">Done</a>
+					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " >Done</a>
 					<!-- <input type="file"><button name="Load_a_data_set" class="btn btn-info">Load a data set</button></input> -->
 				</div>
 			     </div>
@@ -112,18 +87,7 @@ function add_fields() {
 					<canvas id="myCanvas" width="800" height="600"> Your browser does not
 					support the HTML5 canvas tag. </canvas>
 				</div>
-				<script>
-						var canvas = document.getElementById('myCanvas');
-						var context = canvas.getContext('2d');
-						context.globalAlpha = 0.5;
-						var imageObj = new Image();
-
-						imageObj.onload = function() {
-							context.drawImage(imageObj, 0, 0, 800, 600);
-						};
-						 imageObj.src = 'http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/Images/EmptyRoom1.png'; 
-						
-	            </script>
+				
 				<div class="row">
 					<div class="col-md-2">
 						<div class="panel panel-primary">
@@ -186,11 +150,37 @@ function add_fields() {
 			</div>
 		</div>
     </div>
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="https://code.jquery.com/jquery.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	
+<script>
+	 var DeviceCount = 1;
+     
+	 function add_fields() {
+	         DeviceCount++; 
+	         var deviceForm =document.getElementById("device_form");
+	         var deviceFields =document.getElementById("device_fields");
+	         var t=document.createTextNode("Device Count :" + DeviceCount);
+	         var newdeviceFields=deviceForm.cloneNode(true);
+	         var removeBtnDiv = document.createElement("div");
+	         var removeBtn = removeBtnDiv.innerHTML='<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove this device </button>';
+	         t.innerHTML=("Device number:");
+	         newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild);  /* this fails */ 
+	         newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
+	         deviceFields.appendChild(newdeviceFields);  
+		}
+ </script>
+ <script>
+ 
+						var canvas = document.getElementById('myCanvas');
+						var context = canvas.getContext('2d');
+						context.globalAlpha = 0.5;
+						var imageObj = new Image();
+
+						imageObj.onload = function() {
+							context.drawImage(imageObj, 0, 0, 800, 600);
+						};
+						 imageObj.src = 'http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/Images/EmptyRoom1.png'; 
+						
+	            </script>
+
 	
 </body>
-	</html>
-</jsp:root>
+</html>

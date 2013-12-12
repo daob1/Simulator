@@ -1,56 +1,33 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-	<jsp:directive.page language="java"
-		contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" />
-	<jsp:text>
-		<![CDATA[ <?xml version="1.0" encoding="ISO-8859-1" ?> ]]>
-	</jsp:text>
-	<jsp:text>
-		<![CDATA[ <!DOCTYPE html> ]]>
-	</jsp:text>
-	<html>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
-<title>Place Devices</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
-<!-- <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script> -->
+<link rel="stylesheet" type="text/css"
+    href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
 
-<script type="text/javascript"
-    src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-<script type="text/javascript"
-    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+
+<title>Place Devices</title>
 </head>
 <body>
-	<script>
-		$("#draggable")
-		.resizable()
-		.draggable();
-	</script>
-	<script>$('#resizeDiv')
-    .resizable({
-        start: function(e, ui) {
-            alert('resizing started');
-        },
-        resize: function(e, ui) {
-         
-        },
-        stop: function(e, ui) {
-            alert('resizing stopped');
-        }
-    });</script>
+	
 	<div class="container">
 		<div class="row">
 			<div class="col-md-3">
 				<h2>Place Devices</h2>
-				<div id="draggable"><p>Drag This</p></div>
 				
-				<div id="resizeDiv"><p>There seems to be a conflict with JQuery and bootstrap</p></div>
-				
+				<span id="resizeDiv" class="label label-primary">
+				Drag me around
+				</span>
+
 
 				<div class="btn-group">
 					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
@@ -68,17 +45,7 @@
 					<canvas id="myCanvas" width="800" height="600"> Your
 					browser does not support the HTML5 canvas tag. </canvas>
 				</div>
-				<script>
-					var canvas = document.getElementById('myCanvas');
-					var context = canvas.getContext('2d');
-					context.globalAlpha = 0.5;
-					var imageObj = new Image();
-
-					imageObj.onload = function() {
-						context.drawImage(imageObj, 0, 0, 800, 600);
-					};
-					imageObj.src = 'http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/Images/EmptyRoom1.png';
-				</script>
+				
 				<div class="row">
 					<div class="col-md-2">
 						<div class="panel panel-success">
@@ -149,6 +116,48 @@
 		</div>
 	</div>
 
-</body>
+
+<script>
+
+	$(document)
+			.ready(
+					function() {
+						//Canvas stuff
+						var canvas = $("#myCanvas")[0];
+						var ctx = canvas.getContext("2d");
+						var w = $("#myCanvas").width();
+						var h = $("#myCanvas").height();
+						ctx.globalAlpha = 0.5;
+						var img = new Image();
+						img.src = 'Images/EmptyRoom1.png';
+						img.onload = function() {
+							ctx.drawImage(img, 0, 0, w, h);
+						};
+					});
+
+	/* var canvas = document.getElementById('myCanvas');
+	var context = canvas.getContext('2d'); */
+	/* context.globalAlpha = 0.5;
+	var imageObj = new Image();
+
+	imageObj.onload = function() {
+		context.drawImage(imageObj, 0, 0, 800, 600);
+	}; */
+	/*  imageObj.src = 'http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/Images/EmptyRoom1.png'; 
+	 */
+</script>
+<script>
+ 		
+		
+		$(function() {
+			$('#resizeDiv')
+		    .draggable()
+		    .resizable();
+        });
+		
+</script>
+
+
+	
+</body> 
 	</html>
-</jsp:root>
