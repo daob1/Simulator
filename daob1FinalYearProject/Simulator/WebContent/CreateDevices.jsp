@@ -11,7 +11,8 @@
 
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
+ <!--  Load in JStorage -->
+<script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
 </head>
 <body>
 	<div class="container">
@@ -29,7 +30,7 @@
 							maxlength="200" /> <label for="comment"> Comment </label> <input
 							type="text" class="form-control" name="comment" maxlength="200" />
 						<label for="location_description">Location Description </label> <input
-							type="text" class="form-control" name="location_description"
+							type="text" class="form-control" id="location_description" name="location_description"
 							maxlength="25" />
 
 					</form>
@@ -79,6 +80,8 @@
 					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " >Done</a>
 					<!-- <input type="file"><button name="Load_a_data_set" class="btn btn-info">Load a data set</button></input> -->
 				</div>
+				<div id="save">Save</div>
+				<div id="show">show</div>
 			     </div>
 			     
 			</div>
@@ -151,35 +154,47 @@
 		</div>
     </div>
 <script>
-	 var DeviceCount = 1;
-     
-	 function add_fields() {
-	         DeviceCount++; 
-	         var deviceForm =document.getElementById("device_form");
-	         var deviceFields =document.getElementById("device_fields");
-	         var t=document.createTextNode("Device Count :" + DeviceCount);
-	         var newdeviceFields=deviceForm.cloneNode(true);
-	         var removeBtnDiv = document.createElement("div");
-	         var removeBtn = removeBtnDiv.innerHTML='<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove this device </button>';
-	         t.innerHTML=("Device number:");
-	         newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild);  /* this fails */ 
-	         newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
-	         deviceFields.appendChild(newdeviceFields);  
-		}
- </script>
- <script>
- 
-						var canvas = document.getElementById('myCanvas');
-						var context = canvas.getContext('2d');
-						context.globalAlpha = 0.5;
-						var imageObj = new Image();
 
-						imageObj.onload = function() {
-							context.drawImage(imageObj, 0, 0, 800, 600);
-						};
-						 imageObj.src = 'http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/Images/EmptyRoom1.png'; 
-						
-	            </script>
+	$(document).ready(function() {
+		//Canvas stuff
+		var canvas = $("#myCanvas")[0];
+		var ctx = canvas.getContext("2d");
+		var w = $("#myCanvas").width();
+		var h = $("#myCanvas").height();
+		ctx.globalAlpha = 0.5;
+		var img = new Image();
+		img.src = 'Images/EmptyRoom1.png';
+		img.onload = function() {
+			ctx.drawImage(img, 0, 0, w, h);
+		};
+	});
+
+	var DeviceCount = 1;
+
+	function add_fields() {
+		DeviceCount++;
+		var deviceForm = document.getElementById("device_form");
+		var deviceFields = document.getElementById("device_fields");
+		var t = document.createTextNode("Device number :" + DeviceCount);
+		var newdeviceFields = deviceForm.cloneNode(true);
+		var removeBtnDiv = document.createElement("div");
+		var removeBtn = removeBtnDiv.innerHTML = '<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove this device </button>';
+		
+		newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild); 
+		newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
+		deviceFields.appendChild(newdeviceFields);
+	};
+
+	$('#save').click(function() {
+		$.jStorage.set("key", $("#location_description").val());
+	});
+
+	$("#show").click(function() {
+		var input_value = $.jStorage.get("key");
+		alert("Showing you location description: " + input_value);
+	});
+</script>
+
 
 	
 </body>
