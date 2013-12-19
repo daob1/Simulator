@@ -13,6 +13,9 @@
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
  <!--  Load in JStorage -->
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
+<script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
+<script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/DeclanLib.js"></script>
+
 </head>
 <body>
 	<div class="container">
@@ -23,12 +26,12 @@
 
 					<form class="form-group">
 
-						<label for="inhabitant_name"> Patient Name </label> <input
-							type="text" class="form-control" name="inhabitant_name"
+						<label for="inhabitant_name"> Residents Name </label> <input
+							type="text" class="form-control" id="inhabitant_name" name="inhabitant_name"
 							maxlength="25"></input> <label for="care_plan">Care Plan
-						</label> <input type="text" class="form-control" name="care_plan"
+						</label> <input type="text" class="form-control" id="care_plan" name="care_plan"
 							maxlength="200" /> <label for="comment"> Comment </label> <input
-							type="text" class="form-control" name="comment" maxlength="200" />
+							type="text" class="form-control" id="comment" name="comment" maxlength="200" />
 						<label for="location_description">Location Description </label> <input
 							type="text" class="form-control" id="location_description" name="location_description"
 							maxlength="25" />
@@ -41,37 +44,33 @@
 
 					<div id="device_fields">
                         <div>
-						<form class="form-group" id="device_form">
-							    <label for="device_description">Device Description</label> 
-							    <input type="text" class="form-control" name="device_description" /> 
-								<label for="device_units">Device Units</label>
-							<div class="input-group">
-								<div class="input-group-btn">
-									<button type="button" class="btn btn-default dropdown-toggle"
-										data-toggle="dropdown">
-										On/Off <span class="caret"></span>
-									</button>
-									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">On/Off</a>
-										</li>
-										<li><a href="#">Active/InActive</a>
-										</li>
-										<li><a href="#">Numerical</a>
-										</li>
-										<li><a href="#">Custom</a></li>
-									</ul>
-								</div><!-- /btn-group -->
-								<input type="text" class="form-control" name="device_units"/>
-							</div><!-- /input-group -->
-							
-								<label for="initial_value">Initial Value</label> 
-								<input type="text" class="form-control" name="initial_value" />
-						</form>
+						<form class="form-group device_forms" id="device_form">
+							    <label for="device_description" >Device Description</label> 
+							    <input type="text" class="form-control" name="device_description"/> 
+								<label for="device_units">Device Units or State</label>
+
+								
+									<select id="dropdown" class="btn btn-default btn-block dropdown-toggle"
+										name="dropdown" onchange="decision(this)">
+										<option selected disabled>Please Choose</option>
+										<option value="ON/OFF">ON/OFF</option>
+										<option value="Active/InActive">Active/InActive</option>
+										<option value="Numerical">Numerical</option>
+										<option value="Custom">Custom</option>
+									</select>  
+									<label>Initial Value</label>
+								     <div>
+								     <select name="initalValue" class="btn btn-default btn-block dropdown-toggle">
+								     <option selected disabled>Please Choose</option>
+								     </select>
+								     </div>
+
+							</form>
                         </div>
 					</div>
 					
                  <div class="form-group">
-            <!--      <legend>Load a data set</legend> -->
+                 <label>Load a data set</label>
 						<input type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
 				
@@ -80,8 +79,12 @@
 					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " >Done</a>
 					<!-- <input type="file"><button name="Load_a_data_set" class="btn btn-info">Load a data set</button></input> -->
 				</div>
-				<div id="save">Save</div>
-				<div id="show">show</div>
+				<div class="btn-group">
+				<a type="button" class="btn btn-info" id="save">Save values into Jstorage</a>
+				<a type="button" class="btn btn-info" id="gatherDevices">Save devices into JS variable</a>
+				<a type="button" class="btn btn-info" id="show">show values in Jstorage</a>
+				<a type="button" class="btn btn-warning" id="flush">flush values in Jstorage and clear forms</a>
+				</div>
 			     </div>
 			     
 			</div>
@@ -154,7 +157,37 @@
 		</div>
     </div>
 <script>
-
+       //set the variables so they have scope to be used in many functions
+       var DeviceCount ;
+       var inhabitant_name ;
+       var care_plan ;
+       var comment ;
+       var location_description;
+       var allDevices;
+       var EmptyDeviceForm;
+       
+       $(document).ready(function() {
+    	    //first set empty device form to allow adding blank device forms
+    	    EmptyDeviceForm = document.getElementsByClassName("device_forms")[0].cloneNode(true);
+    	    //get data from JStorage if it exists already (.ie has filled it in before)
+    	    // fill in general information about the smart home
+    		inhabitant_name = $.jStorage.get("inhabitant_name");
+    		care_plan = $.jStorage.get("care_plan");
+    		comment = $.jStorage.get("comment");
+    		location_description = $.jStorage.get("location_description");
+    	});
+       
+     $(document).ready(
+   			function() {
+   				document.getElementById("inhabitant_name").value = $.jStorage.get("inhabitant_name");
+   				document.getElementById("care_plan").value = $.jStorage.get("care_plan");
+   				document.getElementById("comment").value = $.jStorage.get("comment");
+   				document.getElementById("location_description").value = $.jStorage.get("location_description");
+   				DeviceCount = $.jStorage.get("DeviceCount");
+   			});
+    
+       
+    //Canvas has a background image to help
 	$(document).ready(function() {
 		//Canvas stuff
 		var canvas = $("#myCanvas")[0];
@@ -169,16 +202,17 @@
 		};
 	});
 
-	var DeviceCount = 1;
 
+    // this is called to add device fields
 	function add_fields() {
 		DeviceCount++;
-		var deviceForm = document.getElementById("device_form");
+		$.jStorage.set("DeviceCount", DeviceCount);
+		var deviceForm = EmptyDeviceForm;
 		var deviceFields = document.getElementById("device_fields");
 		var t = document.createTextNode("Device number :" + DeviceCount);
 		var newdeviceFields = deviceForm.cloneNode(true);
 		var removeBtnDiv = document.createElement("div");
-		var removeBtn = removeBtnDiv.innerHTML = '<button type="button" class="btn btn-warning" onclick="this.parentNode.parentNode.remove(this.parentNode);"> Remove this device </button>';
+		var removeBtn = removeBtnDiv.innerHTML = '<button type="button" class="btn btn-warning removeDevice" onClick="removeDevice(this);"> Remove this device </button>';
 		
 		newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild); 
 		newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
@@ -186,13 +220,106 @@
 	};
 
 	$('#save').click(function() {
-		$.jStorage.set("key", $("#location_description").val());
+		$.jStorage.set("inhabitant_name", $("#inhabitant_name").val());
+		$.jStorage.set("care_plan", $("#care_plan").val());
+		$.jStorage.set("comment", $("#comment").val());
+		$.jStorage.set("location_description", $("#location_description").val());
+		$.jStorage.set("DeviceCount", DeviceCount);
+		/* alert("Have ran the save funstion: "); */
+		inhabitant_name = $.jStorage.get("inhabitant_name");
+		care_plan = $.jStorage.get("care_plan");
+		comment = $.jStorage.get("comment");
+		location_description = $.jStorage.get("location_description");
+	});
+	
+	$("#show").click(function() {
+
+		alert("Showing you inhabitant_name: " + $.jStorage.get("inhabitant_name"));
+		alert("Showing you care_plan: " + $.jStorage.get("care_plan"));
+		alert("Showing you comment: " + $.jStorage.get("comment"));
+		alert("Showing you location description: " + $.jStorage.get("location_description"));
+		alert("Showing you DeviceCount: " + $.jStorage.get("DeviceCount"));
 	});
 
-	$("#show").click(function() {
-		var input_value = $.jStorage.get("key");
-		alert("Showing you location description: " + input_value);
+	$("#flush").click(function() {
+		//clear JStorage Cashe
+		$.jStorage.flush();
+		//clear forms
+		$('form').each(function() { this.reset(); });
+		//reset device count
+		DeviceCount = 1;
+		//remove all devices
+		$(".removeDevice").parent().parent().fadeOut(400, function(){ 
+			   $(this).remove(); 
+			   $.jStorage.set("DeviceCount", DeviceCount);
+	      });  
 	});
+	
+	function removeDevice(btn){
+		$(btn).parent().parent().fadeOut(400, function(){ 
+		   $(btn).parent().parent().remove(); 
+		   DeviceCount--;
+		   $.jStorage.set("DeviceCount", DeviceCount);
+      });  
+	};
+	
+	function decision(objDropDown) {
+		var Unit = objDropDown.value;
+		if (Unit == "ON/OFF") {
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
+		} else if (Unit == "Active/InActive") {
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle"><option value="Acitive" selected >Active</option><option value="Inactive">Inactive</option> </select>');
+		} else if (Unit == "Numerical") {
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" type="number"/>');
+		} else if (Unit == "Custom") {
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" placeholder="Any State" type="text"/>');
+		}
+	};
+	
+	/* //device object constructor //this is now in DeclanLib.js 
+	function device(deviceID,deviceDescription,deviceUnit,deviceInitialValue)
+	{
+	this.deviceID=deviceID;
+	this.deviceDescription=deviceDescription;
+	this.deviceUnit=deviceUnit;
+	this.deviceInitialValue=deviceInitialValue;
+	
+	this.show=show;
+	  function show()
+	  {
+	     alert("ID: " + this.deviceID + ". Desciption: " + this.deviceDescription + ". Unit: " + this.deviceUnit + ". InitialValue: " + this.deviceInitialValue);
+	  }
+	} */
+	
+	$("#gatherDevices").click(function(){
+		allDevices = new Array(); 
+		var devDescription;
+		var devUnit;
+		var devInitialValue;
+		/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
+		for(i = 0; i < (DeviceCount); i++){
+				    devDescription = document.getElementsByClassName("device_forms")[i].getElementsByTagName("input")[0].value;
+				    devUnit = document.getElementsByClassName("device_forms")[i].getElementsByTagName("select")[0].value;
+	                devInitialValue = document.getElementsByName("initalValue")[i].value;
+	                if ((devDescription == undefined || devDescription == "") || devInitialValue == "Please Choose" || devUnit == "Please Choose"){
+	                	 alert("Please fill in all devices created");
+	                	 break;
+	                }
+	                allDevices[i] = new device( i ,devDescription , devUnit , devInitialValue );
+	                //allDevices[i].show();
+	                //alert("THis is the deviceID : " + allDevices[i].deviceID); 
+	                //alert(JSON.stringify(allDevices));
+	                $.jStorage.set("allDevices", allDevices);
+	                
+	                 //I can get its attributes but not its methods?
+	                
+	                
+	                //this is an issue , because I should just get array in Jstorage put into a variable, make change to it and then when i want to add to that jstorage varibale which is not very often but I will just replace the old array under the same key*/ 
+		}
+	});
+	
+	
+	
 </script>
 
 

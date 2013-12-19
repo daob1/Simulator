@@ -15,7 +15,7 @@
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <script src="http://raw.github.com/andris9/jStorage/master/jstorage.js"></script>
   <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
-  
+  <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
 
 
 <title>Place Devices</title>
@@ -26,6 +26,18 @@
 		<div class="row">
 			<div class="col-md-3">
 				<h2>Place Devices</h2>
+				<p>Position the devices in the 
+				<script>
+ if ($.jStorage.get("location_description") == null)
+		 {
+	       document.write("room");
+	     }
+ else 
+         {
+	       document.write($.jStorage.get("location_description"));
+         } ;
+</script>
+</p>
 				
 				<span id="resizeDiv" class="label label-primary draggable-div devices">
 				Drag me around
@@ -129,7 +141,8 @@
 
 
 <script>
-
+    var location_description = $.jStorage.get("location_description");
+    
 	$(document)
 			.ready(
 					function() {
@@ -197,8 +210,7 @@
 	     $selector.find('.undo').hide();
 	    
 	}
-</script>
-<script>
+
  		
 		
 		$(function() {
@@ -219,8 +231,14 @@
         });
 		
 		$("#show").click(function(){
-			var input_value = $.jStorage.get("key");
-			  alert("Showing you location description: " + input_value);
+			  inhabitant_name = $.jStorage.get("inhabitant_name");
+			  alert("Showing you inhabitant_name: " + inhabitant_name);
+			  
+			  testArray = new Array();
+              testArray = $.jStorage.get("allDevices");
+              alert(JSON.stringify(testArray));
+              alert(testArray[0].deviceDescription);
+              alert(testArray[1].deviceDescription);
 			});
 </script>
 
