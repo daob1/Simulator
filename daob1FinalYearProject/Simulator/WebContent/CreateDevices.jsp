@@ -46,11 +46,11 @@
                         <div>
 						<form class="form-group device_forms" id="device_form">
 							    <label for="device_description" >Device Description</label> 
-							    <input type="text" class="form-control" name="device_description"/> 
+							    <input type="text" class="form-control devform devformdesc" name="device_description"/> 
 								<label for="device_units">Device Units or State</label>
 
 								
-									<select id="dropdown" class="btn btn-default btn-block dropdown-toggle"
+									<select id="dropdown" class="btn btn-default btn-block dropdown-toggle devform devformunit"
 										name="dropdown" onchange="decision(this)">
 										<option selected disabled>Please Choose</option>
 										<option value="ON/OFF">ON/OFF</option>
@@ -60,9 +60,8 @@
 									</select>  
 									<label>Initial Value</label>
 								     <div>
-								     <select name="initalValue" class="btn btn-default btn-block dropdown-toggle">
-								     <option selected disabled>Please Choose</option>
-								     </select>
+								     <input  name="initalValue" class="btn btn-default btn-block dropdown-toggle devform devformval"/>
+								     
 								     </div>
 
 							</form>
@@ -81,7 +80,7 @@
 				</div>
 				<div class="btn-group">
 				<a type="button" class="btn btn-info" id="save">Save values into Jstorage</a>
-				<a type="button" class="btn btn-info" id="gatherDevices">Save devices into JS variable</a>
+				<a type="button" class="btn btn-info" id="gatherDevices">GatherDevices</a>
 				<a type="button" class="btn btn-info" id="show">show values in Jstorage</a>
 				<a type="button" class="btn btn-warning" id="flush">flush values in Jstorage and clear forms</a>
 				</div>
@@ -163,119 +162,94 @@
        var care_plan ;
        var comment ;
        var location_description;
-       var allDevices;
+       var allDevices = new Array(); 
+       allDevices = $.jStorage.get("allDevices");
        var EmptyDeviceForm;
        
-       $(document).ready(function() {
-    	    //first set empty device form to allow adding blank device forms
-    	    EmptyDeviceForm = document.getElementsByClassName("device_forms")[0].cloneNode(true);
-    	    //get data from JStorage if it exists already (.ie has filled it in before)
-    	    // fill in general information about the smart home
-    		inhabitant_name = $.jStorage.get("inhabitant_name");
-    		care_plan = $.jStorage.get("care_plan");
-    		comment = $.jStorage.get("comment");
-    		location_description = $.jStorage.get("location_description");
-    	});
        
-     $(document).ready(
-   			function() {
-   				document.getElementById("inhabitant_name").value = $.jStorage.get("inhabitant_name");
-   				document.getElementById("care_plan").value = $.jStorage.get("care_plan");
-   				document.getElementById("comment").value = $.jStorage.get("comment");
-   				document.getElementById("location_description").value = $.jStorage.get("location_description");
-   				DeviceCount = $.jStorage.get("DeviceCount");
-   			});
-    
-       
-    //Canvas has a background image to help
-	$(document).ready(function() {
-		//Canvas stuff
-		var canvas = $("#myCanvas")[0];
-		var ctx = canvas.getContext("2d");
-		var w = $("#myCanvas").width();
-		var h = $("#myCanvas").height();
-		ctx.globalAlpha = 0.5;
-		var img = new Image();
-		img.src = 'Images/EmptyRoom1.png';
-		img.onload = function() {
-			ctx.drawImage(img, 0, 0, w, h);
-		};
-	});
 
-
-    // this is called to add device fields
+	// this is called to add device fields
 	function add_fields() {
 		DeviceCount++;
 		$.jStorage.set("DeviceCount", DeviceCount);
 		var deviceForm = EmptyDeviceForm;
 		var deviceFields = document.getElementById("device_fields");
-		var t = document.createTextNode("Device number :" + DeviceCount);
+		var t = document.createTextNode("");
 		var newdeviceFields = deviceForm.cloneNode(true);
 		var removeBtnDiv = document.createElement("div");
 		var removeBtn = removeBtnDiv.innerHTML = '<button type="button" class="btn btn-warning removeDevice" onClick="removeDevice(this);"> Remove this device </button>';
-		
-		newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild); 
+
+		newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild);
 		newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
 		deviceFields.appendChild(newdeviceFields);
 	};
 
-	$('#save').click(function() {
-		$.jStorage.set("inhabitant_name", $("#inhabitant_name").val());
-		$.jStorage.set("care_plan", $("#care_plan").val());
-		$.jStorage.set("comment", $("#comment").val());
-		$.jStorage.set("location_description", $("#location_description").val());
-		$.jStorage.set("DeviceCount", DeviceCount);
-		/* alert("Have ran the save funstion: "); */
-		inhabitant_name = $.jStorage.get("inhabitant_name");
-		care_plan = $.jStorage.get("care_plan");
-		comment = $.jStorage.get("comment");
-		location_description = $.jStorage.get("location_description");
-	});
-	
-	$("#show").click(function() {
+	$('#save').click(
+			function() {
+				$.jStorage.set("inhabitant_name", $("#inhabitant_name").val());
+				$.jStorage.set("care_plan", $("#care_plan").val());
+				$.jStorage.set("comment", $("#comment").val());
+				$.jStorage.set("location_description", $("#location_description").val());
+				$.jStorage.set("DeviceCount", DeviceCount);
+				/* alert("Have ran the save funstion: "); */
+				inhabitant_name = $.jStorage.get("inhabitant_name");
+				care_plan = $.jStorage.get("care_plan");
+				comment = $.jStorage.get("comment");
+				location_description = $.jStorage.get("location_description");
+			});
 
-		alert("Showing you inhabitant_name: " + $.jStorage.get("inhabitant_name"));
-		alert("Showing you care_plan: " + $.jStorage.get("care_plan"));
-		alert("Showing you comment: " + $.jStorage.get("comment"));
-		alert("Showing you location description: " + $.jStorage.get("location_description"));
-		alert("Showing you DeviceCount: " + $.jStorage.get("DeviceCount"));
-	});
+	$("#show").click(
+			function() {
+
+				alert("Showing you inhabitant_name: " + $.jStorage.get("inhabitant_name"));
+				alert("Showing you care_plan: " + $.jStorage.get("care_plan"));
+				alert("Showing you comment: " + $.jStorage.get("comment"));
+				alert("Showing you location description: " + $.jStorage.get("location_description"));
+				alert("Showing you DeviceCount: " + $.jStorage.get("DeviceCount"));
+				
+				alertArray = new Array();
+		        alertArray = $.jStorage.get("allDevices");
+		        alert(JSON.stringify(alertArray));
+				
+			});
 
 	$("#flush").click(function() {
 		//clear JStorage Cashe
 		$.jStorage.flush();
 		//clear forms
-		$('form').each(function() { this.reset(); });
+		$('form').each(function() {
+			this.reset();
+		});
 		//reset device count
 		DeviceCount = 1;
 		//remove all devices
-		$(".removeDevice").parent().parent().fadeOut(400, function(){ 
-			   $(this).remove(); 
-			   $.jStorage.set("DeviceCount", DeviceCount);
-	      });  
+		$(".removeDevice").parent().parent().fadeOut(400, function() {
+			$(this).remove();
+			$.jStorage.set("DeviceCount", DeviceCount);
+		});
 	});
-	
-	function removeDevice(btn){
-		$(btn).parent().parent().fadeOut(400, function(){ 
-		   $(btn).parent().parent().remove(); 
-		   DeviceCount--;
-		   $.jStorage.set("DeviceCount", DeviceCount);
-      });  
+
+	function removeDevice(btn) {
+		$(btn).parent().parent().fadeOut(400, function() {
+			$(btn).parent().parent().remove();
+			DeviceCount--;
+			$.jStorage.set("DeviceCount", DeviceCount);
+		});
 	};
-	
+
 	function decision(objDropDown) {
 		var Unit = objDropDown.value;
 		if (Unit == "ON/OFF") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle devformval"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
 		} else if (Unit == "Active/InActive") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle"><option value="Acitive" selected >Active</option><option value="Inactive">Inactive</option> </select>');
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle devformval"><option value="Active" selected >Active</option><option value="Inactive">Inactive</option> </select>');
 		} else if (Unit == "Numerical") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" type="number"/>');
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" class="devformval" type="number"/>');
 		} else if (Unit == "Custom") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" placeholder="Any State" type="text"/>');
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" class="devformval" placeholder="Any State" type="text"/>');
 		}
 	};
-	
+
 	/* //device object constructor //this is now in DeclanLib.js 
 	function device(deviceID,deviceDescription,deviceUnit,deviceInitialValue)
 	{
@@ -290,35 +264,97 @@
 	     alert("ID: " + this.deviceID + ". Desciption: " + this.deviceDescription + ". Unit: " + this.deviceUnit + ". InitialValue: " + this.deviceInitialValue);
 	  }
 	} */
+
+	$("#gatherDevices")
+			.click(
+					function() {
+						//this happens as the user leaves the page
+						var tempDevices = new Array(); 
+						var devDescription;
+						var devUnit;
+						var devInitialValue;
+						/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
+						for (i = 0; i < (DeviceCount); i++) {
+							devDescription = document
+									.getElementsByClassName("device_forms")[i]
+									.getElementsByTagName("input")[0].value;
+							devUnit = document
+									.getElementsByClassName("device_forms")[i]
+									.getElementsByTagName("select")[0].value;
+							devInitialValue = document
+									.getElementsByName("initalValue")[i].value;
+							if ((devDescription == undefined || devDescription == "")
+									|| devInitialValue == "Please Choose"
+									|| devUnit == "Please Choose") {
+								alert("Please fill in all devices created");
+								break;
+							}
+							tempDevices[i] = new device(i, devDescription, devUnit, devInitialValue);
+							//allDevices[i].show();
+							//alert("THis is the deviceID : " + allDevices[i].deviceID); 
+							//alert(JSON.stringify(allDevices));
+							$.jStorage.set("allDevices", tempDevices);
+							//I can get its attributes but not its methods?
+							//this may be an issue , because I should just get array in Jstorage put into a variable, make change to it and then when i want to add to that jstorage varibale which is not very often but I will just replace the old array under the same key*/ 
+						}
+					});
 	
-	$("#gatherDevices").click(function(){
-		allDevices = new Array(); 
-		var devDescription;
-		var devUnit;
-		var devInitialValue;
-		/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
-		for(i = 0; i < (DeviceCount); i++){
-				    devDescription = document.getElementsByClassName("device_forms")[i].getElementsByTagName("input")[0].value;
-				    devUnit = document.getElementsByClassName("device_forms")[i].getElementsByTagName("select")[0].value;
-	                devInitialValue = document.getElementsByName("initalValue")[i].value;
-	                if ((devDescription == undefined || devDescription == "") || devInitialValue == "Please Choose" || devUnit == "Please Choose"){
-	                	 alert("Please fill in all devices created");
-	                	 break;
-	                }
-	                allDevices[i] = new device( i ,devDescription , devUnit , devInitialValue );
-	                //allDevices[i].show();
-	                //alert("THis is the deviceID : " + allDevices[i].deviceID); 
-	                //alert(JSON.stringify(allDevices));
-	                $.jStorage.set("allDevices", allDevices);
-	                
-	                 //I can get its attributes but not its methods?
-	                
-	                
-	                //this is an issue , because I should just get array in Jstorage put into a variable, make change to it and then when i want to add to that jstorage varibale which is not very often but I will just replace the old array under the same key*/ 
-		}
+	$(document).ready(function() {
+	    //first set empty device form to allow adding blank device forms
+	    EmptyDeviceForm = document.getElementsByClassName("device_forms")[0].cloneNode(true);
+	    //get data from JStorage if it exists already (.ie has filled it in before)
+	    // fill in general information about the smart home
+		inhabitant_name = $.jStorage.get("inhabitant_name");
+		care_plan = $.jStorage.get("care_plan");
+		comment = $.jStorage.get("comment");
+		location_description = $.jStorage.get("location_description");
+		
 	});
-	
-	
+   
+ $(document).ready(function() {
+				//fill in the forms
+				document.getElementById("inhabitant_name").value = $.jStorage.get("inhabitant_name");
+				document.getElementById("care_plan").value = $.jStorage.get("care_plan");
+				document.getElementById("comment").value = $.jStorage.get("comment");
+				document.getElementById("location_description").value = $.jStorage.get("location_description");
+				DeviceCount = $.jStorage.get("DeviceCount");
+				//if device count is over 1 , ie it has been filled in before the we fill in additional device
+				
+				    for(i = 0; i < (allDevices.length); i++){
+				    	if (i != 0){
+				    	 var deviceForm = EmptyDeviceForm;
+						    var deviceFields = document.getElementById("device_fields");
+						    var t = document.createTextNode("");
+						    var newdeviceFields = deviceForm.cloneNode(true);
+						    var removeBtnDiv = document.createElement("div");
+						    var removeBtn = removeBtnDiv.innerHTML = '<button type="button" class="btn btn-warning removeDevice" onClick="removeDevice(this);"> Remove this device </button>';
+
+				    	newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild);
+					    newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
+				    	deviceFields.appendChild(newdeviceFields);
+				    	}
+				    	/* //get the forms by class and fill them appropiately */
+				    	$( ".devformdesc" )[i].value = allDevices[i].deviceDescription;
+				    	$( ".devformunit" )[i].value = allDevices[i].deviceUnit;
+				    	$( ".devformval" )[i].value = allDevices[i].deviceInitialValue;
+				    }
+				
+			});
+
+//Canvas has a background image to help
+$(document).ready(function() {
+	//Canvas stuff
+	var canvas = $("#myCanvas")[0];
+	var ctx = canvas.getContext("2d");
+	var w = $("#myCanvas").width();
+	var h = $("#myCanvas").height();
+	ctx.globalAlpha = 0.5;
+	var img = new Image();
+	img.src = 'Images/EmptyRoom1.png';
+	img.onload = function() {
+		ctx.drawImage(img, 0, 0, w, h);
+	};
+});
 	
 </script>
 

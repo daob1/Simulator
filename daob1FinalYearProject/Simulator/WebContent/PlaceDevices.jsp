@@ -38,23 +38,15 @@
          } ;
 </script>
 </p>
-				
-				<span id="resizeDiv" class="label label-primary draggable-div devices">
-				Drag me around
-				</span>
-				<span id="resizeDiv2" class="label label-primary draggable-div devices">
-				Drag me around
-				</span>
-				<span id="resizeDiv3" class="label label-primary draggable-div devices">
-				Drag me around
-				</span>
-				
+				<div id="objectArea">
+				 
+				</div>
 
 				<div class="btn-group">
 					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
 					<a href="ConfigureRules.jsp" type="button" class="btn btn-success ">Configure Rules</a> 
 			    </div>
-			    <div id="show">show</div>
+			    <!-- <div id="show">show</div> -->
 			</div>
 
 
@@ -157,6 +149,19 @@
 						img.onload = function() {
 							ctx.drawImage(img, 0, 0, w, h); 
 						}; 
+					
+						inhabitant_name = $.jStorage.get("inhabitant_name");
+						/* alert("Showing you inhabitant_name: " + inhabitant_name); */
+						testArray = new Array();
+			            testArray = $.jStorage.get("allDevices");
+			            /* alert(JSON.stringify(testArray)); */
+
+			            var info = "";
+			            for (i=0;i<testArray.length;i++)
+			              { 
+			            	  info = info + '<div><span class="label label-primary draggable-div devices">' + testArray[i].deviceDescription + '<br />State: ' + testArray[i].deviceInitialValue + '</span>';
+			              }
+			            objectArea.innerHTML=info;
 					});
 
 	$('#myCanvas').droppable({
@@ -231,14 +236,22 @@
         });
 		
 		$("#show").click(function(){
-			  inhabitant_name = $.jStorage.get("inhabitant_name");
+			 /*  inhabitant_name = $.jStorage.get("inhabitant_name");
 			  alert("Showing you inhabitant_name: " + inhabitant_name);
 			  
 			  testArray = new Array();
               testArray = $.jStorage.get("allDevices");
               alert(JSON.stringify(testArray));
-              alert(testArray[0].deviceDescription);
-              alert(testArray[1].deviceDescription);
+
+              var info = "";
+              for (i=0;i<testArray.length;i++)
+              { 
+            	  alert(testArray[i].deviceDescription);
+            	  
+            	  info = info + '<span class="label label-primary draggable-div devices">' + testArray[i].deviceDescription + '</span>';
+              }
+              objectArea.innerHTML=info; */
+
 			});
 </script>
 
