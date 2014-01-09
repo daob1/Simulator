@@ -28,13 +28,13 @@
 
 						<label for="inhabitant_name"> Residents Name </label> <input
 							type="text" class="form-control" id="inhabitant_name" name="inhabitant_name"
-							maxlength="25"></input> <label for="care_plan">Care Plan
+							maxlength="25" required/> <label for="care_plan">Care Plan
 						</label> <input type="text" class="form-control" id="care_plan" name="care_plan"
-							maxlength="200" /> <label for="comment"> Comment </label> <input
+							maxlength="200" required/> <label for="comment"> Comment </label> <input
 							type="text" class="form-control" id="comment" name="comment" maxlength="200" />
 						<label for="location_description">Location Description </label> <input
 							type="text" class="form-control" id="location_description" name="location_description"
-							maxlength="25" />
+							maxlength="25" required/>
 
 					</form>
 					<div>
@@ -46,7 +46,7 @@
                         <div>
 						<form class="form-group device_forms" id="device_form">
 							    <label for="device_description" >Device Description</label> 
-							    <input type="text" class="form-control devform devformdesc" name="device_description"/> 
+							    <input type="text" class="form-control devform devformdesc" name="device_description" required/> 
 								<label for="device_units">Device Units or State</label>
 
 								
@@ -60,7 +60,7 @@
 									</select>  
 									<label>Initial Value</label>
 								     <div>
-								     <input  name="initalValue" class="btn btn-default btn-block dropdown-toggle devform devformval"/>
+								     <input  name="initalValue" class="btn btn-default btn-block dropdown-toggle devform devformval required"/>
 								     
 								     </div>
 
@@ -68,21 +68,20 @@
                         </div>
 					</div>
 					
-                 <div class="form-group">
+                 <div>
                  <label>Load a data set</label>
 						<input type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
 				
 				<div class="btn-group">
 					<a href="Information.html" type="button" class="btn btn-info ">Back to Information</a> 
-					<a href="PlaceDevices.jsp" type="button" class="btn btn-success " >Done</a>
-					<!-- <input type="file"><button name="Load_a_data_set" class="btn btn-info">Load a data set</button></input> -->
+					<input id="Done" type="submit" class="btn btn-success " value="Done"/>
 				</div>
 				<div class="btn-group">
-				<a type="button" class="btn btn-info" id="save">Save values into Jstorage</a>
-				<a type="button" class="btn btn-info" id="gatherDevices">GatherDevices</a>
+				<!-- <a type="button" class="btn btn-info" id="save">Save values into Jstorage</a>
+				<a type="button" class="btn btn-info" id="gatherDevices">GatherDevices</a> -->
 				<a type="button" class="btn btn-info" id="show">show values in Jstorage</a>
-				<a type="button" class="btn btn-warning" id="flush">flush values in Jstorage and clear forms</a>
+				<a type="button" class="btn btn-warning" id="flush">reset</a>
 				</div>
 			     </div>
 			     
@@ -157,13 +156,13 @@
     </div>
 <script>
        //set the variables so they have scope to be used in many functions
-       var DeviceCount ;
+       var DeviceCount = $.jStorage.get("DeviceCount");
        var inhabitant_name ;
        var care_plan ;
        var comment ;
        var location_description;
        var allDevices = new Array(); 
-       allDevices = $.jStorage.get("allDevices");
+      /*  allDevices = $.jStorage.get("allDevices"); */
        var EmptyDeviceForm;
        
        
@@ -184,7 +183,7 @@
 		deviceFields.appendChild(newdeviceFields);
 	};
 
-	$('#save').click(
+	$('#Done').click(
 			function() {
 				$.jStorage.set("inhabitant_name", $("#inhabitant_name").val());
 				$.jStorage.set("care_plan", $("#care_plan").val());
@@ -196,6 +195,40 @@
 				care_plan = $.jStorage.get("care_plan");
 				comment = $.jStorage.get("comment");
 				location_description = $.jStorage.get("location_description");
+				
+				//this was gather devices
+				//this happens as the user leaves the page
+						var tempDevices = new Array(); 
+						var devDescription;
+						var devUnit;
+						var devInitialValue;
+						var done = true;
+						/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
+						for (i = 0; i < (DeviceCount); i++) {
+							devDescription = document
+									.getElementsByClassName("device_forms")[i]
+									.getElementsByTagName("input")[0].value;
+							devUnit = document
+									.getElementsByClassName("device_forms")[i]
+									.getElementsByTagName("select")[0].value;
+							devInitialValue = document
+									.getElementsByName("initalValue")[i].value;
+							//the html5 required attribute will not be recognised unless the submit button is clicked in the form
+							if ((devDescription == undefined || devDescription == "")
+									|| devInitialValue == "Please Choose"
+									|| devUnit == "Please Choose") {
+								alert("Please fill in all devices created");
+								done = false;
+								break;
+							}
+							//if a device is filled up we add it to our array and put the array in JStorage
+							tempDevices[i] = new device(i, devDescription, devUnit, devInitialValue);
+							$.jStorage.set("allDevices", tempDevices);
+						} //end of for loop
+				
+				if(done == true){
+					window.location = "PlaceDevices.jsp";
+				}
 			});
 
 	$("#show").click(
@@ -222,6 +255,7 @@
 		});
 		//reset device count
 		DeviceCount = 1;
+		$.jStorage.set("DeviceCount", DeviceCount);
 		//remove all devices
 		$(".removeDevice").parent().parent().fadeOut(400, function() {
 			$(this).remove();
@@ -265,39 +299,20 @@
 	  }
 	} */
 
-	$("#gatherDevices")
-			.click(
-					function() {
-						//this happens as the user leaves the page
-						var tempDevices = new Array(); 
-						var devDescription;
-						var devUnit;
-						var devInitialValue;
-						/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
-						for (i = 0; i < (DeviceCount); i++) {
-							devDescription = document
-									.getElementsByClassName("device_forms")[i]
-									.getElementsByTagName("input")[0].value;
-							devUnit = document
-									.getElementsByClassName("device_forms")[i]
-									.getElementsByTagName("select")[0].value;
-							devInitialValue = document
-									.getElementsByName("initalValue")[i].value;
-							if ((devDescription == undefined || devDescription == "")
-									|| devInitialValue == "Please Choose"
-									|| devUnit == "Please Choose") {
-								alert("Please fill in all devices created");
-								break;
-							}
-							tempDevices[i] = new device(i, devDescription, devUnit, devInitialValue);
-							//allDevices[i].show();
-							//alert("THis is the deviceID : " + allDevices[i].deviceID); 
-							//alert(JSON.stringify(allDevices));
-							$.jStorage.set("allDevices", tempDevices);
-							//I can get its attributes but not its methods?
-							//this may be an issue , because I should just get array in Jstorage put into a variable, make change to it and then when i want to add to that jstorage varibale which is not very often but I will just replace the old array under the same key*/ 
-						}
-					});
+	//Canvas has a background image to help visualise
+	$(document).ready(function() {
+		//Canvas stuff
+		var canvas = $("#myCanvas")[0];
+		var ctx = canvas.getContext("2d");
+		var w = $("#myCanvas").width();
+		var h = $("#myCanvas").height();
+		ctx.globalAlpha = 0.5;
+		var img = new Image();
+		img.src = 'Images/EmptyRoom1.png';
+		img.onload = function() {
+			ctx.drawImage(img, 0, 0, w, h);
+		};
+	});
 	
 	$(document).ready(function() {
 	    //first set empty device form to allow adding blank device forms
@@ -309,9 +324,7 @@
 		comment = $.jStorage.get("comment");
 		location_description = $.jStorage.get("location_description");
 		
-	});
-   
- $(document).ready(function() {
+		        allDevices = $.jStorage.get("allDevices"); 
 				//fill in the forms
 				document.getElementById("inhabitant_name").value = $.jStorage.get("inhabitant_name");
 				document.getElementById("care_plan").value = $.jStorage.get("care_plan");
@@ -320,8 +333,8 @@
 				DeviceCount = $.jStorage.get("DeviceCount");
 				//if device count is over 1 , ie it has been filled in before the we fill in additional device
 				
-				    for(i = 0; i < (allDevices.length); i++){
-				    	if (i != 0){
+				    for(i = 0; i < (DeviceCount); i++){
+				    	if (i != 0){ //this is so the first form is used
 				    	 var deviceForm = EmptyDeviceForm;
 						    var deviceFields = document.getElementById("device_fields");
 						    var t = document.createTextNode("");
@@ -341,20 +354,6 @@
 				
 			});
 
-//Canvas has a background image to help
-$(document).ready(function() {
-	//Canvas stuff
-	var canvas = $("#myCanvas")[0];
-	var ctx = canvas.getContext("2d");
-	var w = $("#myCanvas").width();
-	var h = $("#myCanvas").height();
-	ctx.globalAlpha = 0.5;
-	var img = new Image();
-	img.src = 'Images/EmptyRoom1.png';
-	img.onload = function() {
-		ctx.drawImage(img, 0, 0, w, h);
-	};
-});
 	
 </script>
 
