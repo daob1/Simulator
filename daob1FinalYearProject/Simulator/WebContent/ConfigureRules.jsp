@@ -43,7 +43,7 @@
 						    </label>
 						    <select class="btn btn-default btn-block dropdown-toggle ruleData">
 								<option value="AND">AND</option>
-								<option value="NOT">NOT</option>
+								<option value="NOT">NOT</option>  
 							</select> 
 							<label >Select Device
 							</label>
