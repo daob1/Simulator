@@ -17,3 +17,12 @@ function device(deviceID,deviceDescription,deviceUnit,deviceInitialValue, device
 	     alert("ID: " + this.deviceID + ". Desciption: " + this.deviceDescription + ". Unit: " + this.deviceUnit + ". InitialValue: " + this.deviceInitialValue);
 	  }
 	}
+
+//rule object constructor
+function rule(ruleID, ruleDescription,  ruleTriggerDetails, ruleOutcomes )
+   {
+	this.ruleID=ruleID;
+	this.ruleDescription = ruleDescription;
+	this.ruleTriggerDetails = ruleTriggerDetails;
+	this.ruleOutcomes = ruleOutcomes;
+   }

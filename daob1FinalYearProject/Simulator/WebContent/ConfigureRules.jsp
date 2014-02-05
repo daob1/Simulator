@@ -34,44 +34,50 @@
 
 					<form class="form-group rule_form">
 						<label for="device_description">Rule Description</label>
-						 <input type="text" class="form-control"  ></input>
-						 
-						 <button type="button" class="btn btn-info add_rule_device_form_btn"> Add a triggering device 
-						 </button>
-						 <fieldset class="triggerDeviceFieldset">
-						    <label >Select operation on this device
-						    </label>
-						    <select class="btn btn-default btn-block dropdown-toggle ruleData">
+						<input type="text" class="form-control"  ></input>
+						<fieldset class="triggerDeviceFieldset">
+						<div class="operationSelectiondiv">
+						    <label >Select Operation</label>
+						    <select class="btn btn-default btn-block dropdown-toggle ruleData originallyhidden">
 								<option value="AND">AND</option>
 								<option value="NOT">NOT</option>  
-							</select> 
-							<label >Select Device
-							</label>
-						    <select class="btn btn-default btn-block dropdown-toggle devSelect ruleData">
-						        <option value="" selected disabled >Device </option>
-						    <!-- for each device output an option for it here -->
-						    </select>
-						    <span></span>
-						 </fieldset >
-						 <button type="button" class="btn btn-info add_affected_device_form_btn"> Add an affected device 
-						 </button>
-						 <fieldset class="affectedDeviceFieldset" >
+						    </select> 
+						</div>
+						<div class="deviceSelectiondiv">
+						<label >Select Device</label>
+					       <select class="btn btn-default btn-block dropdown-toggle devSelect ruleData">
+						      <option value="" selected disabled > Device </option>
+						      <!-- for each device output an option for it here -->
+						   </select>
+						   <div></div>
+						</div>
+						    <button type="button" class="btn btn-info add_rule_device_form_btn"> Add Trigger
+						     </button>
+						    <!--  <button type="button" class="btn btn-info add_rule_operation_form_btn"> Add Operation
+						     </button> -->
+						</fieldset >
+						<button type="button" class="btn btn-info btn-block add_affected_device_form_btn"> Add Affected Device</button>
+						<span class="help-block">These device are the outcome.</span>
+						<fieldset class="affectedDeviceFieldset" >
+						<div class="affectedDevicediv">
 					    <label >Select Device</label>
 					    <select class="btn btn-default btn-block dropdown-toggle devSelect ruleData">
 						<option value="" selected disabled > Device </option>
 						<!-- for each device output an option for it here -->
 						</select>
-						<span></span> 
+						<span></span>
+						 </div>
 						</fieldset>
-						<button type="button"
-						class="btn btn-warning btn-block remove_rule_form_btn">Remove this rule</button>
+						<!-- <button type="button" class="btn btn-warning btn-group hide_toggle_rule_form_btn">Hide/Show rule</button> -->
+						<button type="button" class="btn btn-warning btn-group remove_rule_form_btn">Remove rule</button>
 					</form>
 				</div>
 				<div class="btn-group">
 					<a href="PlaceDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
-					<a href="Information.html" type="button" class="btn btn-success ">Done</a> 
-					<button type="button" id="show">Show JstorageVariables</button>
-					<button type="button" id="save">Save into JstorageVariables</button>
+					<a id="goToSimulation" type="button" class="btn btn-success ">Done</a> 
+					
+					<!-- <button type="button" id="show">Show JstorageVariables</button>
+					<button type="button" id="save">Save into JstorageVariables</button> -->
 			    </div>
 				
 
@@ -162,13 +168,19 @@ $(document).on("ready", $(".devSelect"),  function() {
 	//alert("triggerDeviceFieldset has been loaded");
 	for (i=0;i<devArray.length;i++)
     { 
-		$(".devSelect").append("<option value=" + devArray[i].deviceID + "> " + devArray[i].deviceDescription + "</option>");
-    }
+		$(".devSelect").append("<option value=" + devArray[i].deviceID + ":" + devArray[i].deviceDescription + "> " + devArray[i].deviceDescription + "</option>");
+    }  
 	
 var RuleCount = $.jStorage.get("RuleCount");
 var RuleForm = $(".rule_form:eq(0)").clone(true);
-var DeviceSelectionForm = $(".triggerDeviceFieldset:eq(0)").clone(true);
-var affectedDeviceFieldset = $(".affectedDeviceFieldset:eq(0)").clone(true);
+var emptyDeviceFormSelect = $( "<label >Select Device</label> " + 
+"<select class='btn btn-default btn-block dropdown-toggle devSelect ruleData'> " + 
+"<option value='' selected disabled >Device </option></select>");
+var DeviceSelectionForm = $(".affectedDevicediv:eq(0)").clone(true);
+$(DeviceSelectionForm).attr( "class", "deviceSelectiondiv" );
+var affectedDevicediv = $(".affectedDevicediv:eq(0)").clone(true);
+var operationdiv = $(".operationSelectiondiv:eq(0)") ;
+
 
 $(document).ready(function() {
 	//Canvas stuff
@@ -202,53 +214,101 @@ $(document).ready(function() {
 	});
 
 
-	$("#save").on("click", function(){
-		ruleCount = $.jStorage.get("RuleCount");
+	$("#goToSimulation").on("click", function(){
+		//gather the rule information
+		RuleCount = $.jStorage.get("RuleCount");
 		RulesComplete = true;
 		var ruleDescription;
-		var RuleTriggerDeviceOperator; 
-		var RuleTriggerDevice;
+		var CurrentRuleTriggerDeviceOperator; 
+		var RuleTriggerDeviceDesc;
+		var RuleTriggerDeviceID;
 		var RuleTriggerDeviceState;
 		var triggerDevices = new Array;
-		var RuleAffectedDevice;
+		var RuleAffectedDeviceDesc;
+		var RuleAffectedDeviceID;
 		var RuleAffectedDeviceState;
-		for(i = 0; i < ruleCount; i++ ){
-			ruleDescription = $(".rule_form:eq(" + i + ") input").val();
-			$(".rule_form:eq(" + i + ")").find(".triggerDeviceFieldset").each(function(){
-				//each trigger device detail needs to be gathered, ie its operation, the device, and state
-				RuleTriggerDeviceOperator = ( $( this ).find( '.ruleData:eq(0)' ).val());
-				if ( typeof $( this ).find( '.ruleData:eq(1)' ).val() == "undefined" || $( this ).find( '.ruleData:eq(1)' ).val() == null
-						|| $( this ).find( '.ruleData:eq(2)' ).val() == "") {
-					alert("Please give devices in rules a specified state to continue");
-					RulesComplete = false;
-				} 
-				RuleTriggerDevice = ( $( this ).find( '.ruleData:eq(1)' ).val());
-				RuleTriggerDeviceState = ( $( this ).find( '.ruleData:eq(2)' ).val());
-			});
-			$(".rule_form:eq(" + i + ")").find(".affectedDeviceFieldset").each(function(){
+		var AllRulesArray = new Array();
+		var Triggers = new Array();
+		var Outcome = new Array();
+		for(i = 0; i < RuleCount; i++ ){
+			AllRulesArray[i];
+			Triggers = new Array();
+			if (RulesComplete == true){
+			   // There is only 1 description to take care of for ever rule
+			   ruleDescription = $(".rule_form:eq(" + i + ") input").val();
+			   $(".rule_form:eq(" + i + ") .triggerDeviceFieldset").find("div").each(function(){
+				      // each trigger device detail needs to be gathered, it could be an operation, or a device  where we 
+				      // need to gather the device descripton, and state
+				
+				      //go though the triger field div by div and checkif the div is an operation or a device before gather the info
+				      if ( $(this).hasClass( "operationSelectiondiv" )){
+				        	// it will be an ADD or a NOT
+					        CurrentRuleTriggerDeviceOperator = ( $( this ).find( '.ruleData:eq(0)' ).val());	
+				      }else if ($(this).hasClass( "deviceSelectiondiv" )) {
+					        //its a device and need to gather device info
+					        //first check if the fields are filled in, report error if not
+				            if ( ruleDescription == "" || typeof $( this ).find( '.ruleData:eq(0)' ).val() == "undefined" || $( this ).find( '.ruleData:eq(0)' ).val() == null
+					             	 || $( this ).find( '.ruleData:eq(1)' ).val() == "" ) {
+					             /* alert("Please give devices in rules a specified state to continue"); */
+					             RulesComplete = false;
+					             return false; // basically a break but in a each loop
+				            } else{
+					          //each detail is put into an array
+				             RuleTriggerDeviceID = (( $( this ).find( '.ruleData:eq(0)' ).val()).split(':')[0]);
+				             RuleTriggerDeviceDesc= (( $( this ).find( '.ruleData:eq(0)' ).val()).split(':')[1]);
+				             RuleTriggerDeviceState = ( $( this ).find( '.ruleData:eq(1)' ).val());
+				             var TriggerDeviceDetailsArray = [ CurrentRuleTriggerDeviceOperator, RuleTriggerDeviceID, RuleTriggerDeviceDesc, RuleTriggerDeviceState ];
+                             Triggers.push(TriggerDeviceDetailsArray);
+				             // add this TriggerDeviceArray to the array listing of all trigger devices
+				            }
+				      }
+				      
+			   });
+			   /* alert( JSON.stringify(Triggers) );  */ 
+			}
+			//re establish the Outcome array variable so Outcomes from previous rules do not get listed in the current rule
+			Outcome = new Array();
+			if (RulesComplete == true){
+			   $(".rule_form:eq(" + i + ") .affectedDeviceFieldset").find("div").each(function(){
+				
 				//each affect device detail needs to be gathered ie the device and its new state
-				if ( typeof $( this ).find( '.ruleData:eq(0)' ).val() == "undefined" || $( this ).find( '.ruleData:eq(0)' ).val() == null
-					    || $( this ).find( '.ruleData:eq(1)' ).val() == "") {
-					alert("Please give devices in rules a specified state to continue");
-					RulesComplete = false;
-				} 
-				RuleAffectedDevice = ( $( this ).find( '.ruleData:eq(0)' ).val());
-				RuleAffectedDeviceState = ( $( this ).find( '.ruleData:eq(1)' ).val());
-			});
-			//put rule Id and description into array as keys
-			
-			
-			
+				    if  ( typeof $( this ).find( '.ruleData:eq(0)' ).val() == "undefined" || $( this ).find( '.ruleData:eq(0)' ).val() == null
+					         || $( this ).find( '.ruleData:eq(1)' ).val() == "") {
+					    /* alert("Please give devices in rules a specified state to continue"); */
+					    RulesComplete = false;
+				    } else {
+				    	//each detail is put into an array
+				        RuleAffectedDeviceID = (( $( this ).find( '.ruleData:eq(0)' ).val()).split(':')[0]);
+				        RuleAffectedDeviceDesc = (( $( this ).find( '.ruleData:eq(0)' ).val()).split(':')[1]);
+				        RuleAffectedDeviceState = ( $( this ).find( '.ruleData:eq(1)' ).val());
+				        var AffectedDeviceDetailsArray = [RuleAffectedDeviceID, RuleAffectedDeviceDesc, RuleAffectedDeviceState];
+				        Outcome.push(AffectedDeviceDetailsArray);
+				    }
+			   });
+			 //add in the rule ID, the description , the details for triggers, and the outcomes
+				AllRulesArray.push(new rule([i], ruleDescription, Triggers, Outcome));
+			}
+			/* alert( JSON.stringify(Outcome) ); */
 			
 		}
+		/* alert("THIS IS THE AllRULESARRAY" + JSON.stringify( AllRulesArray )); */
+		//if all is ok set the array to the Jstorage and move on to the simulation step
+		if (RulesComplete == true){
+			 $.jStorage.set("AllRules", AllRulesArray);
+			 window.location = "Simulation.jsp";
+		 } else {
+			 alert("Please give devices in rules a specified state to continue");
+		 }
+		
 	});
 	
-	
+	 
 	
 });
 
 $("#add_rule_form_btn").on("click", function() {
 	$("#rule_fields").append(RuleForm.clone(true));
+	RuleCount = $.jStorage.get("RuleCount");
 	if(typeof RuleCount === 'undefined'){
 		RuleCount = 1;
 	}
@@ -257,11 +317,12 @@ $("#add_rule_form_btn").on("click", function() {
 });
 
 $(document).on("click", ".add_rule_device_form_btn",function() {
-	DeviceSelectionForm.clone(true).insertAfter($(this));
+	DeviceSelectionForm.clone(true).insertAfter($(this).prev());
+	operationdiv.clone(true).insertAfter($(this).prev().prev());
 });
 
 $(document).on("click", ".add_affected_device_form_btn",function() {
-	affectedDeviceFieldset.clone(true).insertAfter($(this));
+	affectedDevicediv.clone(true).appendTo($(this).next().next());
 });
 
 $(document).on("click", ".remove_rule_form_btn", function(){
@@ -272,9 +333,16 @@ $(document).on("click", ".remove_rule_form_btn", function(){
 	});
 });
 
+$(document).on("click", ".add_rule_operation_form_btn", function(){
+	operationdiv.clone(true).insertAfter($(this).prev().prev());
+});
+
+
 $(document).on("change", (".devSelect"),  function() {
 	//get the units of this device
-	 var Unit = devArray[this.value].deviceUnit;
+	 var id = (this.value).split(':')[0];
+	/* the 0 is because this.value is a string containing "number:description" so after the split the 0 references the number  */
+	 var Unit = devArray[ id ].deviceUnit; 
 	//now only give the options that are available with that measure unit
 		if (Unit == "ON/OFF") {
 			$(this).next().html('<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
@@ -286,6 +354,10 @@ $(document).on("change", (".devSelect"),  function() {
 			$(this).next().html('<input name="initalValue" class="devformval ruleData" placeholder="Any State" type="text"/>');
 		}
     }); 
+    
+/* $(document).on("click", ".hide_toggle_rule_form_btn", function(){
+	$(this).parent().accordion({});
+}); */
     
 $(document).ready(function() {
 	var RuleCount = $.jStorage.get("RuleCount");
