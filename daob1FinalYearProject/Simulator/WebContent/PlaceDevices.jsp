@@ -47,7 +47,7 @@
 					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
 					<a id="goToConfigureRules" type="button" class="btn btn-success ">Configure Rules</a> 
 			    </div>
-			    <div id="show">show</div>
+			   <!--  <div id="show">show</div> -->
 			</div>
 
 
