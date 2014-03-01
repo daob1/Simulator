@@ -25,37 +25,27 @@
 	
 	<div class="container">
 		<div class="row">
-			<div class="col-md-3">
+			   <div class="col-md-3">
 				<h2>Place Devices</h2>
-				
-				<div id="objectArea" class="jumbotron">
-				 <p>Position the devices in the 
-				<script>
- if ($.jStorage.get("location_description") == null)
-		 {
-	       document.write("room");
-	     }
- else 
-         {
-	       document.write($.jStorage.get("location_description"));
-         } ;
-</script>
-</p>
-				</div>
-
 				<div class="btn-group">
 					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
 					<a id="goToConfigureRules" type="button" class="btn btn-success ">Configure Rules</a> 
 			    </div>
+				<div id="objectArea" class="jumbotron">
+				<p>Position the devices in the 
+				<script>
+                if ($.jStorage.get("location_description") == null){
+	                 document.write("room");
+	            } else{
+	                 document.write($.jStorage.get("location_description"));
+                } ;
+                </script>
+               </p>
+               </div>
 			   <!--  <div id="show">show</div> -->
-			</div>
+			  </div>
 
-
-
-
-
-
-			<div class="col-md-9">
+			  <div class="col-md-9">
 				<div id="CanvasDiv" class="row">
 				
 					<canvas id="myCanvas" width="800" height="600"> Your
@@ -229,10 +219,10 @@
 		$('.devices').draggable({
 			stack : ".devices",
 			containment : '#myCanvas'
-		}).resizable({
+		})/* .resizable({
 			maxHeight : 300,
 			maxWidth : 300
-		});
+		}) */;
 
 		$("#myCanvas").droppable(
 				{

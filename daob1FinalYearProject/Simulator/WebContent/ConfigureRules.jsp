@@ -348,10 +348,21 @@ $(document).on("change", (".devSelect"),  function() {
 			$(this).next().html('<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
 		} else if (Unit == "Active/InActive") {
 			$(this).next().html('<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="Active" selected >Active</option><option value="Inactive">Inactive</option> </select>');
-		} else if (Unit == "Numerical") {
-			$(this).next().html('<input name="initalValue" class="devformval ruleData" type="number"/>');
-		} else if (Unit == "Custom") {
-			$(this).next().html('<input name="initalValue" class="devformval ruleData" placeholder="Any State" type="text"/>');
+		} else {
+			    /* Unit is an enum */
+				var ArrayOfEnums = $.jStorage.get("EnumsArray");
+				var options; 
+				for (var e in  ArrayOfEnums){
+					if (Unit == $.trim( ArrayOfEnums[e].EnumName )){
+						var values = ArrayOfEnums[e].EnumValues; 
+						for ( var v in values){
+						   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
+					       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+						}
+					}
+			    }  
+				$(this).next().html('<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"> '
+				+ options + '</select>'); 
 		}
     }); 
     

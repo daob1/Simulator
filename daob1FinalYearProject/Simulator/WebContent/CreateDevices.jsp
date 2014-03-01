@@ -23,7 +23,11 @@
 			<div class="col-md-3">
 				<div data-spy="scroll" data-target="#">
 					<h2>Create Devices</h2>
-
+					<div class="btn-group">
+						<a href="Information.html" type="button" class="btn btn-info ">Information</a> 
+						<a type="button" class="btn btn-warning" id="flush">Reset</a>
+						<input id="Done" type="submit" class="btn btn-success " value="Done" />
+					</div>
 					<form class="form-group">
 
 						<label for="inhabitant_name"> Residents Name </label> <input
@@ -55,8 +59,8 @@
 										<option selected disabled>Please Choose</option>
 										<option value="ON/OFF">ON/OFF</option>
 										<option value="Active/InActive">Active/InActive</option>
-										<option value="Numerical">Numerical</option>
-										<option value="Custom">Custom</option>
+										<!-- <option value="Numerical">Numerical</option>
+										<option value="Custom">Custom</option> -->
 									</select>  
 									<label>Initial Value</label>
 								     <div>
@@ -68,21 +72,24 @@
                         </div>
 					</div>
 					
+					
+		
+		
+		<div>
+		<form id=EnumForm >  <label>Create an Enumeration (optional)</label>
+		<input type="text" placeholder="Name of Enum" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <input type="text" placeholder="Enum Value one" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <input type="text" placeholder="Enum Value two" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <input type="text" placeholder="Enum Value three" class="btn btn-default btn-block dropdown-toggle" required/>
+		<input value="Create this Enumeration" class="btn btn-info" type="submit">
+		</form>
+		</div>	
                  <div>
                  <label>Load a data set</label>
 						<input type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
 				
-				<div class="btn-group">
-					<a href="Information.html" type="button" class="btn btn-info ">Back to Information</a> 
-					<input id="Done" type="submit" class="btn btn-success " value="Done"/>
-				</div>
-				<div class="btn-group">
-				<!-- <a type="button" class="btn btn-info" id="save">Save values into Jstorage</a>
-				<a type="button" class="btn btn-info" id="gatherDevices">GatherDevices</a> -->
-				<a type="button" class="btn btn-info" id="show">show values in Jstorage</a>
-				<a type="button" class="btn btn-warning" id="flush">reset</a>
-				</div>
+				
 			     </div>
 			     
 			</div>
@@ -165,7 +172,7 @@
       /*  allDevices = $.jStorage.get("allDevices"); */
        var EmptyDeviceForm;
        
-       
+        
 
 	// this is called to add device fields
 	function add_fields() {
@@ -180,6 +187,18 @@
 
 		newdeviceFields.insertBefore(removeBtnDiv, newdeviceFields.firstChild);
 		newdeviceFields.insertBefore(t, newdeviceFields.firstChild);
+		
+		// add any enumerations to our device select form
+		options = '<option selected disabled>Please Choose</option>'
+			+ '<option value="ON/OFF">ON/OFF</option> '
+			+ '<option value="Active/InActive">Active/InActive</option>';
+		for (var e in  $.jStorage.get("EnumsArray")){
+		     name = $.jStorage.get("EnumsArray")[e].EnumName;
+		     var options = options + ("<option value=" +  name + " >" + name + " </option>");
+	    }
+		newdeviceFields[2].innerHTML = options ;
+		
+		//now we add in the form
 		deviceFields.appendChild(newdeviceFields);
 	};
 
@@ -214,6 +233,7 @@
 							devInitialValue = document
 									.getElementsByName("initalValue")[i].value;
 							//the html5 required attribute will not be recognised unless the submit button is clicked in the form
+							// so these fields need to be checked here
 							if ((devDescription == undefined || devDescription == "")
 									|| devInitialValue == "Please Choose"
 									|| devUnit == "Please Choose") {
@@ -231,7 +251,7 @@
 				}
 			});
 
-	$("#show").click(
+	/* $("#show").click(
 			function() {
 
 				alert("Showing you inhabitant_name: " + $.jStorage.get("inhabitant_name"));
@@ -244,7 +264,7 @@
 		        alertArray = $.jStorage.get("allDevices");
 		        alert(JSON.stringify(alertArray));
 				
-			});
+			}); */
 
 	$("#flush").click(function() {
 		//clear JStorage Cashe
@@ -277,27 +297,23 @@
 			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle devformval"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>');
 		} else if (Unit == "Active/InActive") {
 			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<select name="initalValue" class="btn btn-default dropdown-toggle devformval"><option value="Active" selected >Active</option><option value="Inactive">Inactive</option> </select>');
-		} else if (Unit == "Numerical") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" class="devformval" type="number"/>');
-		} else if (Unit == "Custom") {
-			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = ('<input name="initalValue" class="devformval" placeholder="Any State" type="text"/>');
+		} else {  /* Unit is an enum */
+			var ArrayOfEnums = $.jStorage.get("EnumsArray");
+			var options;
+			for (var e in  ArrayOfEnums){
+				if (Unit == $.trim( ArrayOfEnums[e].EnumName )){
+					var values = ArrayOfEnums[e].EnumValues;
+					for ( var v in values){
+					   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
+				       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+					}
+				}
+		    }
+			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval"> '
+			+ options + '</select>'; 
 		}
-	};
+	}; 
 
-	/* //device object constructor //this is now in DeclanLib.js 
-	function device(deviceID,deviceDescription,deviceUnit,deviceInitialValue)
-	{
-	this.deviceID=deviceID;
-	this.deviceDescription=deviceDescription;
-	this.deviceUnit=deviceUnit;
-	this.deviceInitialValue=deviceInitialValue;
-	
-	this.show=show;
-	  function show()
-	  {
-	     alert("ID: " + this.deviceID + ". Desciption: " + this.deviceDescription + ". Unit: " + this.deviceUnit + ". InitialValue: " + this.deviceInitialValue);
-	  }
-	} */
 
 	//Canvas has a background image to help visualise
 	$(document).ready(function() {
@@ -314,6 +330,37 @@
 		};
 	});
 	
+	
+	$("#EnumForm").on("submit", function (e) {
+		//so the page is not reloaded
+	    e.preventDefault();
+		
+		var Enumname = (this[0].value);
+		var EnumVals = new Array();
+		for (var x = 1; x < this.length - 1; x++){
+			EnumVals.push(this[x].value);
+		}
+		var Enumer = new enumeration( Enumname, EnumVals );
+		var EnumsArray = $.jStorage.get("EnumsArray");
+		EnumsArray.push(Enumer);
+		$.jStorage.set("EnumsArray", EnumsArray);
+		//alert(JSON.stringify($.jStorage.get("EnumsArray")));
+		
+		var NewOptionName = EnumsArray[EnumsArray.length-1].EnumName;
+		var NewOption =  "<option value=" +  $.trim( NewOptionName ) + " >" + NewOptionName + " </option>";
+		
+		$(".devformunit").append( NewOption );
+		$("#EnumForm").trigger('reset');
+		
+	});
+	
+	$(document).ready(function() {
+		    for (var e in  $.jStorage.get("EnumsArray")){
+			     name = $.jStorage.get("EnumsArray")[e].EnumName;
+			     $(".devformunit").append("<option value=" +  name + " >" + name + " </option>");
+		    }
+	}); 
+	 
 	$(document).ready(function() {
 	    //first set empty device form to allow adding blank device forms
 	    EmptyDeviceForm = document.getElementsByClassName("device_forms")[0].cloneNode(true);
@@ -353,7 +400,9 @@
 				    }
 				
 			});
-
+	 
+	
+	
 	
 </script>
 

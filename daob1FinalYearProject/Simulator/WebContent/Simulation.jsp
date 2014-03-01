@@ -8,7 +8,7 @@
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
-
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"></link>
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
  <!--  Load in JStorage -->
@@ -31,6 +31,20 @@
 					<a href="ConfigureRules.jsp" type="button" class="btn btn-info ">Previous
 						Step</a> <a href="Information.html" type="button"
 						class="btn btn-success ">Done</a>
+				</div>
+
+				<div id="dialog-form" title="Change State">
+					<p class="validateTips">What state would you like the device to be?.</p>
+
+					<form>
+						<fieldset>
+							<select  class="btn btn-default btn-block dropdown-toggle newStateSelector onchange='newStateSelection(this, 0)'"
+										name="dropdown"">
+										<option selected disabled>Please Choose</option>
+										
+							</select>  
+						</fieldset>
+					</form>
 				</div>
 			</div>
 
@@ -110,6 +124,8 @@
 		</div>
 	</div>
 <script>
+var latestValue;
+var newStatePicked; 
 //Canvas stuff
 var canvas = $("#myCanvas")[0];
 var ctx = canvas.getContext("2d");
@@ -142,7 +158,7 @@ $(".devices").addClass('fixed');
 //Load the rules
 var Rules = $.jStorage.get("AllRules");
 
-function getCustomState( devID ){
+/* function getCustomState( devID ){
 	//create a div with input form in the left pane
 	var CustomStateDivCopy = CustomStateDiv.clone(true);
 	CustomStateDivCopy.find('label').append( deviceArray[devID].deviceDescription );
@@ -154,7 +170,7 @@ function getNumberState( devID ){
 	var NumberStateDivCopy = NumberStateDiv.clone(true);
 	NumberStateDivCopy.find('label').append( deviceArray[devID].deviceDescription );
 	$("#inputBoxes").append( NumberStateDivCopy );
-}
+} */
 
 
 function changeDeviceState( devID ){
@@ -175,8 +191,26 @@ function changeDeviceState( devID ){
 				   deviceArray[devID].deviceInitialValue = "Active";
 			   }
 			   break;
-		   case "Numerical": 
-			   // deviceArray[devID].deviceInitialValue= getNewState( devID )
+		   default:  //its an enum
+			   newStatePicked = false;
+		    var ArrayOfEnums = $.jStorage.get("EnumsArray");
+			var options = "<option selected disabled>Please Choose</option>";
+			for (var e in  ArrayOfEnums){
+				if (Unit == $.trim( ArrayOfEnums[e].EnumName )){
+					var values = ArrayOfEnums[e].EnumValues;
+					for ( var v in values){
+					   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
+				       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+					}
+				}
+		    }
+			$( "#dialog-form" ).find( "p" ).html("What state would you like the " + deviceArray[devID].deviceDescription + " to be?.");
+			$( "#dialog-form" ).find( "fieldset" ).html('<select class="btn btn-default dropdown-toggle newStateSelector" onchange="newStateSelection(this,' +  devID + ' )";> '
+			+ options + '</select>'); 
+            $( "#dialog-form" ).dialog( "open");
+            /* do{ deviceArray[devID].deviceInitialValue = latestValue; }while( $( "#dialog-form" ).dialog( "isOpen") ); */
+            // deviceArray[devID].deviceInitialValue = latestValue;
+			   /* // deviceArray[devID].deviceInitialValue= getNewState( devID )
 			   do{
 			   var state = prompt("Please enter new Numberical state for " + deviceArray[devID].deviceDescription );
 			   } while (isNaN(state) == true);
@@ -191,12 +225,12 @@ function changeDeviceState( devID ){
 		       deviceArray[devID].deviceInitialValue = state;
       
 			   //var NewState = promt("State input for " + deviceArray[devID].deviceDescription);
-			   break;
+			   break; */
 		}
 };
 
 function invokeRule( RuleID ){
-	//for(var i = 0; i <= Rules[RuleID].ruleOutcomes[i].length; i++){
+	
 		var OutComes = Rules[RuleID].ruleOutcomes;
 		for(j=0; j < OutComes.length; j++){
 			var devID = OutComes[j][0];
@@ -204,7 +238,7 @@ function invokeRule( RuleID ){
 			$('#' + devID).effect("highlight", {}, 3000).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
 		    
 		}
-	//}
+
 }
 
 function UseRules(){
@@ -256,8 +290,25 @@ $(document).on("click", ".devices", function(){
 	devID = $(this).attr('id');
 	changeDeviceState( devID );
 	$('#' + devID).effect("highlight", {}, 3000).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
-    UseRules()
+    UseRules();
 });
+
+$( "#dialog-form" ).dialog({
+    autoOpen: false,
+    height: 200,
+    width: 300,
+    modal: true});
+    
+/* $(".newStateSelector").on('change', function() {
+	latestValue = this.value;
+}); */
+
+function newStateSelection( selectObj , DevID){
+	deviceArray[DevID].deviceInitialValue =  selectObj.value ;
+    $( "#dialog-form" ).dialog( "close" );
+    $('#' + DevID).html(deviceArray[DevID].deviceDescription + "<br/> State: " + deviceArray[DevID].deviceInitialValue );
+};
+
 
 </script>
 </body>

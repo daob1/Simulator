@@ -27,8 +27,8 @@ function rule(ruleID, ruleDescription,  ruleTriggerDetails, ruleOutcomes )
 	this.ruleOutcomes = ruleOutcomes;
    }
 
-function enumeration( enumID, EnumName, EnumValues){
-	this.enumID = enumID;
+function enumeration( EnumName, EnumValues){
+	//this.enumID = enumID;
 	this.EnumName = EnumName;
 	this.EnumValues = EnumValues;
 }
