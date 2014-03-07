@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
+<title>Configure Rules</title>
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
@@ -24,7 +24,10 @@
 			<div class="col-md-3">
 			<h2>Configure Rules</h2>
 
-				
+				<div class="btn-group">
+					<a href="PlaceDevices.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a>
+					<a id="goToSimulation" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a> 
+			    </div>
 				<div>
 					<button type="button" id="add_rule_form_btn"
 						class="btn btn-info btn-block">Add a rule</button>
@@ -34,7 +37,7 @@
 
 					<form class="form-group rule_form">
 						<label for="device_description">Rule Description</label>
-						<input type="text" class="form-control"  ></input>
+						<input type="text" class="form-control desc"  ></input>
 						<fieldset class="triggerDeviceFieldset">
 						<div class="operationSelectiondiv">
 						    <label >Select Operation</label>
@@ -72,13 +75,7 @@
 						<button type="button" class="btn btn-warning btn-group remove_rule_form_btn">Remove rule</button>
 					</form>
 				</div>
-				<div class="btn-group">
-					<a href="PlaceDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
-					<a id="goToSimulation" type="button" class="btn btn-success ">Done</a> 
-					
-					<!-- <button type="button" id="show">Show JstorageVariables</button>
-					<button type="button" id="save">Save into JstorageVariables</button> -->
-			    </div>
+				
 				
 
 
@@ -295,6 +292,7 @@ $(document).ready(function() {
 		//if all is ok set the array to the Jstorage and move on to the simulation step
 		if (RulesComplete == true){
 			 $.jStorage.set("AllRules", AllRulesArray);
+			 //alert( JSON.stringify( $.jStorage.get("AllRules") ) );
 			 window.location = "Simulation.jsp";
 		 } else {
 			 alert("Please give devices in rules a specified state to continue");
@@ -371,10 +369,124 @@ $(document).on("change", (".devSelect"),  function() {
 }); */
     
 $(document).ready(function() {
-	var RuleCount = $.jStorage.get("RuleCount");
-	for(i=0; i< RuleCount; i++){
-		//$("#rule_fields").after(RuleForm.clone(true));
+	var Rules = $.jStorage.get("AllRules");
+	if ( Rules == null) {
+		// no rules have been set before
+		RuleCount = 1;
+		$.jStorage.set("RuleCount", RuleCount);
+	} else {
+	    // rules have been set before
+		RuleCount = Rules.length;
+		$.jStorage.set("RuleCount", RuleCount);
+		//add the rule forms to the page
+		for(i=1; i< RuleCount; i++){
+			// i starts at 1 because the first rule form is already present
+			$("#rule_fields").append(RuleForm.clone(true));
+		}
+		// now we fill in the rule forms
+		for(i=0; i< RuleCount; i++){
+			
+			console.log("Rules Desc: " + Rules[i].ruleDescription);
+			console.log("Rule " + [i]);
+			
+			document.getElementsByClassName("desc")[0].value = Rules[i].ruleDescription;
+			//$(".rule_form:eq( " + i + " )").find("input").value = Rules[i].ruleDescription;
+			
+			
+			$(".triggerDeviceFieldset:eq(" + i + ") .operationSelectiondiv").find("select");
+			$(".triggerDeviceFieldset:eq(" + i + ") .deviceSelectiondiv").find("select");
+			
+			for( j = 0; j < Rules[i].ruleTriggerDetails.length; j++ ){
+				if (j > 0){
+					$(".triggerDeviceFieldset:eq("+i+")").append(operationdiv.clone(true));
+					$(".triggerDeviceFieldset:eq("+i+")").append(DeviceSelectionForm.clone(true));
+					
+				}
+				//put in operation value
+				var operation = Rules[i].ruleTriggerDetails[j][0];
+				document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("originallyhidden")[j].value = operation;
+				
+				var unit = devArray[Rules[i].ruleTriggerDetails[j][1]].deviceUnit;
+				var selectbox ="";
+				if (unit == "ON/OFF") {
+					selectbox = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>';
+				} else if (unit == "Active/InActive") {
+					selectbox= '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="Active" selected >Active</option><option value="Inactive">Inactive</option> </select>';
+				} else {
+				  var ArrayOfEnums = $.jStorage.get("EnumsArray");
+				  var options = ""; 
+				  for (var e in  ArrayOfEnums){
+					if (unit == $.trim( ArrayOfEnums[e].EnumName )){
+						var values = ArrayOfEnums[e].EnumValues; 
+						for ( var v in values){
+						   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
+					       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+						}
+					}
+			      }  
+				  selectbox = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData">  ' + options  + ' </select>';
+				}
+				document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("devSelect")[j].nextElementSibling.innerHTML =  selectbox ;
+				var devstate = Rules[i].ruleTriggerDetails[j][3];
+				document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("devformval")[j].value = devstate;
+				
+				//$(".ruleform:eq("+ 0 +") .triggerDeviceFieldset:eq(" + 0 + ") .operationSelectiondiv:eq(" + 0 + ")").find("option").effect("highlight", {}, 500);
+				
+				console.log("Triggers");
+				console.log("Operator " + Rules[i].ruleTriggerDetails[j][0]);
+				//$(".triggerDeviceFieldset:eq(" + i + ") .operationSelectiondiv:eq(" + j + ")").find("select").value =  Rules[i].ruleTriggerDetails[j][0];
+				var operation = Rules[i].ruleTriggerDetails[j][0];
+				document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("operationSelectiondiv")[j].value = operation;
+				console.log("ID " + Rules[i].ruleTriggerDetails[j][1]);
+				console.log("device : " + Rules[i].ruleTriggerDetails[j][2]);
+				var deviceSelected = Rules[i].ruleTriggerDetails[j][1] + ":" + Rules[i].ruleTriggerDetails[j][2];
+				//var selectionVarA = document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("devSelect")[j].value;
+				document.getElementsByClassName("triggerDeviceFieldset")[i].getElementsByClassName("devSelect")[j].value = deviceSelected;
+				/* $(".triggerDeviceFieldset:eq(" + i + ") .deviceSelectiondiv:eq(" + j + ")").find("select").value =  */
+				console.log("state : " + Rules[i].ruleTriggerDetails[j][3]);
+			}
+			for( k = 0; k < Rules[i].ruleOutcomes.length; k++ ){
+				if (k > 0){
+					//document.getElementsByClassName("affectedDeviceFieldset")[k].append( affectedDevicediv );
+					affectedDevicediv.clone(true).appendTo( document.getElementsByClassName("affectedDeviceFieldset")[i] );
+				}
+				
+				console.log("OutComes");
+				var AffDevSelect = Rules[i].ruleOutcomes[k][0] + ":" + Rules[i].ruleOutcomes[k][1]; 
+				document.getElementsByClassName("affectedDeviceFieldset")[i].getElementsByClassName("devSelect")[k].value = AffDevSelect;
+				var unit = devArray[Rules[i].ruleOutcomes[k][0]].deviceUnit;
+				var selectbox ="";
+				if (unit == "ON/OFF") {
+					selectbox = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="ON" selected >ON</option><option value="OFF">OFF</option> </select>';
+				} else if (unit == "Active/InActive") {
+					selectbox= '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData"><option value="Active" selected >Active</option><option value="Inactive">Inactive</option> </select>';
+				} else {
+				  var ArrayOfEnums = $.jStorage.get("EnumsArray");
+				  var options = ""; 
+				  for (var e in  ArrayOfEnums){
+					if (unit == $.trim( ArrayOfEnums[e].EnumName )){
+						var values = ArrayOfEnums[e].EnumValues; 
+						for ( var v in values){
+						   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
+					       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+						}
+					}
+			      }  
+				  selectbox = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval ruleData">  ' + options  + ' </select>';
+				}
+				document.getElementsByClassName("affectedDeviceFieldset")[i].getElementsByClassName("devSelect")[k].nextElementSibling.innerHTML =  selectbox ;
+				var devstate = Rules[i].ruleOutcomes[k][2];
+				document.getElementsByClassName("affectedDeviceFieldset")[i].getElementsByClassName("devformval")[k].value = devstate;
+				//$(".affectedDeviceFieldset:eq(" + i + ") .devSelect:eq(" + k + ")").find("select").effect("highlight", {}, 500);
+				console.log("ID " + Rules[i].ruleOutcomes[k][0]);
+				console.log("device : " + Rules[i].ruleOutcomes[k][1]);
+				console.log("state : " + Rules[i].ruleOutcomes[k][2]);
+			}
+		}
+		
 	}
+	
+	
 	});
      
 

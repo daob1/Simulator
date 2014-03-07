@@ -4,7 +4,7 @@
 <html>
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
+<title>Place Devices</title>
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
@@ -28,8 +28,8 @@
 			   <div class="col-md-3">
 				<h2>Place Devices</h2>
 				<div class="btn-group">
-					<a href="CreateDevices.jsp" type="button" class="btn btn-info ">Previous Step</a>
-					<a id="goToConfigureRules" type="button" class="btn btn-success ">Configure Rules</a> 
+					<a href="CreateDevices.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a>
+					<a id="goToConfigureRules" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a> 
 			    </div>
 				<div id="objectArea" class="jumbotron">
 				<p>Position the devices in the 

@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
+<title>Create Devices</title>
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
@@ -24,9 +24,8 @@
 				<div data-spy="scroll" data-target="#">
 					<h2>Create Devices</h2>
 					<div class="btn-group">
-						<a href="Information.html" type="button" class="btn btn-info ">Information</a> 
-						<a type="button" class="btn btn-warning" id="flush">Reset</a>
-						<input id="Done" type="submit" class="btn btn-success " value="Done" />
+						<a href="Information.html" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Information</a> 
+						<button id="Done" type="submit" class="btn btn-lg btn-success " value="Done" >Done<span class="glyphicon glyphicon-chevron-right"></span></button>
 					</div>
 					<form class="form-group">
 
@@ -59,8 +58,8 @@
 										<option selected disabled>Please Choose</option>
 										<option value="ON/OFF">ON/OFF</option>
 										<option value="Active/InActive">Active/InActive</option>
-										<!-- <option value="Numerical">Numerical</option>
-										<option value="Custom">Custom</option> -->
+										<option disabled >You Can Add Enumerations</option>
+										
 									</select>  
 									<label>Initial Value</label>
 								     <div>
@@ -77,18 +76,24 @@
 		
 		<div>
 		<form id=EnumForm >  <label>Create an Enumeration (optional)</label>
-		<input type="text" placeholder="Name of Enum" class="btn btn-default btn-block dropdown-toggle" required/>
-		 <input type="text" placeholder="Enum Value one" class="btn btn-default btn-block dropdown-toggle" required/>
-		 <input type="text" placeholder="Enum Value two" class="btn btn-default btn-block dropdown-toggle" required/>
-		 <input type="text" placeholder="Enum Value three" class="btn btn-default btn-block dropdown-toggle" required/>
-		<input value="Create this Enumeration" class="btn btn-info" type="submit">
+		 <input type="text" placeholder="Name of Enum" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <input type="text" placeholder="Possible Value one" class="btn btn-default btn-block dropdown-toggle" id="firstEnuminput" required/>
+		 <input type="text" placeholder="Possible Value two" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <input type="text" placeholder="Possible Value three" class="btn btn-default btn-block dropdown-toggle" required/>
+		 <div class="btn-group" id="AddAndRemoveButtonDiv"> 
+		 <button type="button" id="AddEnumerationInput" class="btn btn-info btn-md"><span class="glyphicon glyphicon-plus"></span>Add Options</button>
+		 <button type="button" id="RemoveEnumerationInput" class="btn btn-warning btn-md">Remove Options<span class="glyphicon glyphicon-minus"></span></button>
+		 </div>
+		 <input value="Create this Enumeration" class="btn btn-info btn-block" type="submit">
 		</form>
 		</div>	
+		         
                  <div>
-                 <label>Load a data set</label>
+                 <label>Load Data Set</label>
 						<input type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
-				
+				<label>Remove All Current Data</label>
+				<button type="button" class="btn btn-block btn-warning" id="flush"> <span class="glyphicon glyphicon-remove-sign"></span>  Reset </button>
 				
 			     </div>
 			     
@@ -171,7 +176,7 @@
        var allDevices = new Array(); 
       /*  allDevices = $.jStorage.get("allDevices"); */
        var EmptyDeviceForm;
-       
+       var inputCopy = $("#firstEnuminput").clone(true).attr("placeholder", "Possible Value");
         
 
 	// this is called to add device fields
@@ -275,16 +280,20 @@
 		});
 		//reset device count
 		DeviceCount = 1;
+		$.jStorage.set("allDevices", DeviceCount);
 		$.jStorage.set("DeviceCount", DeviceCount);
+		$.jStorage.set("AllRules", new Array());
+		$.jStorage.set("EnumsArray", new Array());
 		//remove all devices
 		$(".removeDevice").parent().parent().fadeOut(400, function() {
 			$(this).remove();
 			$.jStorage.set("DeviceCount", DeviceCount);
 		});
+		location.reload();
 	});
 
 	function removeDevice(btn) {
-		$(btn).parent().parent().fadeOut(400, function() {
+		$(btn).parent().parent().slideUp(400, function() {
 			$(btn).parent().parent().remove();
 			DeviceCount--;
 			$.jStorage.set("DeviceCount", DeviceCount);
@@ -335,13 +344,18 @@
 		//so the page is not reloaded
 	    e.preventDefault();
 		
-		var Enumname = (this[0].value);
+	    var EnumsArray = $.jStorage.get("EnumsArray");
+	    if (EnumsArray == null){
+	    	EnumsArray = [];
+	    }
+		
+		var Enumname = (this[0].value).split(' ').join('_');
 		var EnumVals = new Array();
-		for (var x = 1; x < this.length - 1; x++){
+		// we minus 3 here to take into account the submit input, addd options button and remove option button 
+		for (var x = 1; x < this.length - 3; x++){ 
 			EnumVals.push(this[x].value);
 		}
 		var Enumer = new enumeration( Enumname, EnumVals );
-		var EnumsArray = $.jStorage.get("EnumsArray");
 		EnumsArray.push(Enumer);
 		$.jStorage.set("EnumsArray", EnumsArray);
 		//alert(JSON.stringify($.jStorage.get("EnumsArray")));
@@ -355,11 +369,29 @@
 	});
 	
 	$(document).ready(function() {
-		    for (var e in  $.jStorage.get("EnumsArray")){
+		    var EnumsArray = $.jStorage.get("EnumsArray");
+		    if (EnumsArray == null){
+		    	EnumsArray = [];
+		    }
+		
+		    for (var e in  EnumsArray){
 			     name = $.jStorage.get("EnumsArray")[e].EnumName;
 			     $(".devformunit").append("<option value=" +  name + " >" + name + " </option>");
 		    }
 	}); 
+	
+	$("#AddEnumerationInput").on("click", function(){
+			$("#AddAndRemoveButtonDiv").before( inputCopy.clone(true).attr("placeholder", "Possible Value"));
+	});
+	
+	$("#RemoveEnumerationInput").on("click", function(){
+		var optionCount = $("#EnumForm input").length -2 ;
+		if( optionCount > 3 ){
+			 $( "#EnumForm input:eq("+ optionCount +")").slideUp(400, function() {
+					$(this).remove();
+			 });
+		}
+	});
 	 
 	$(document).ready(function() {
 	    //first set empty device form to allow adding blank device forms

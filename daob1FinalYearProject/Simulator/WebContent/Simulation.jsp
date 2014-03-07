@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-
+<title>Simulation</title>
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
@@ -28,9 +28,8 @@
                 </div>
                 
 				<div class="btn-group">
-					<a href="ConfigureRules.jsp" type="button" class="btn btn-info ">Previous
-						Step</a> <a href="Information.html" type="button"
-						class="btn btn-success ">Done</a>
+					<a href="ConfigureRules.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a> 
+						<a href="Results.jsp" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a>
 				</div>
 
 				<div id="dialog-form" title="Change State">
@@ -124,7 +123,8 @@
 		</div>
 	</div>
 <script>
-var latestValue;
+var Events = new Array();
+var eventID = 0;
 var newStatePicked; 
 //Canvas stuff
 var canvas = $("#myCanvas")[0];
@@ -158,20 +158,17 @@ $(".devices").addClass('fixed');
 //Load the rules
 var Rules = $.jStorage.get("AllRules");
 
-/* function getCustomState( devID ){
-	//create a div with input form in the left pane
-	var CustomStateDivCopy = CustomStateDiv.clone(true);
-	CustomStateDivCopy.find('label').append( deviceArray[devID].deviceDescription );
-	$("#inputBoxes").append( CustomStateDivCopy );
-}
 
-function getNumberState( devID ){
-	//create a div with input form in the left pane
-	var NumberStateDivCopy = NumberStateDiv.clone(true);
-	NumberStateDivCopy.find('label').append( deviceArray[devID].deviceDescription );
-	$("#inputBoxes").append( NumberStateDivCopy );
-} */
-
+$(document).ready(function() {
+	// if we start a new simulation
+	$.jStorage.set("Events", (new Array()) );
+	
+	// at the beginning of the simulation we put in an event foreach device
+	for (i=0;i<deviceArray.length;i++){
+		NoteEvent(deviceArray[i].deviceDescription,  deviceArray[i].deviceInitialValue );
+	}
+	
+});
 
 function changeDeviceState( devID ){
 	var Unit = deviceArray[devID].deviceUnit;
@@ -208,48 +205,40 @@ function changeDeviceState( devID ){
 			$( "#dialog-form" ).find( "fieldset" ).html('<select class="btn btn-default dropdown-toggle newStateSelector" onchange="newStateSelection(this,' +  devID + ' )";> '
 			+ options + '</select>'); 
             $( "#dialog-form" ).dialog( "open");
-            /* do{ deviceArray[devID].deviceInitialValue = latestValue; }while( $( "#dialog-form" ).dialog( "isOpen") ); */
-            // deviceArray[devID].deviceInitialValue = latestValue;
-			   /* // deviceArray[devID].deviceInitialValue= getNewState( devID )
-			   do{
-			   var state = prompt("Please enter new Numberical state for " + deviceArray[devID].deviceDescription );
-			   } while (isNaN(state) == true);
-		       deviceArray[devID].deviceInitialValue = state;
-			   //var NewState = promt("number input for " + deviceArray[devID].deviceDescription);
-			   break;
-		   case "Custom":
-			   // deviceArray[devID].deviceInitialValue= getNewState( devID )
-			   do{
-			   var state= prompt("Please enter new state for " + deviceArray[devID].deviceDescription );
-			   } while ((isNaN(state) == false));
-		       deviceArray[devID].deviceInitialValue = state;
-      
-			   //var NewState = promt("State input for " + deviceArray[devID].deviceDescription);
-			   break; */
+            //the newStateSelection function called in the dailog box will give the device its newValue
 		}
 };
 
 function invokeRule( RuleID ){
-	
+	    //this function causes all outcomes of the rule ruleID to be put in place
 		var OutComes = Rules[RuleID].ruleOutcomes;
 		for(j=0; j < OutComes.length; j++){
 			var devID = OutComes[j][0];
 			deviceArray[devID].deviceInitialValue = OutComes[j][2];
-			$('#' + devID).effect("highlight", {}, 3000).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
-		    
+			$('#' + devID).effect("highlight", {}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
+			NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
 		}
+        
+		// create an event with a time attribute
+		
+		
+		//at the end of invoking a rule should i check if more rules are to be invoked?
+		//invokeTheseRules( WhatRulesShouldBeInvoked() );
+		//No because rules should only be carried out only if a person triggered them.
+}    
 
-}
-
-function UseRules(){
-	var Match = true;
+function WhatRulesShouldBeInvoked(){
+	// this function checks each device state and compares them to what triggers a rule. If the 
+	// triggers of a rule are satisfied that rule will be invoked.
+	RulesThatShouldBeInvoked = new Array();
+	var Match;
 	//in each rule 
-	for(var i = 0; i < (Rules.length - 1) ; i++){
+	for(var i = 0; i < (Rules.length) ; i++){
 		//check each device in trigger and compare to current values
 		var Triggers = Rules[i].ruleTriggerDetails;
 		for(j=0; j<Triggers.length;j++){
-			
-			// dont forget the operator
+			Match = true; 
+			// take into account the operator
 			if( Triggers[j][0] == 'NOT'){
 				if (deviceArray[Triggers[j][1]].deviceInitialValue == Triggers[j][3] && (Match)){
 					// there is a mismatch 
@@ -265,49 +254,81 @@ function UseRules(){
 					break;
 				}
 			}
-			//0 is operator
-			//1 is device ID
-			//2 is description
-			//3 is value
+			//0 is operator //1 is device ID //2 is description //3 is value
 			// if there is a mismatch 
                     //stop comparing and move to next rule.
             //else 
-        	// invoke the rule
 		}
-		if(Match ==  true){
-			// invoke the rule
-			//alert("INVOKING RULE: " + i);
-			invokeRule(i);
-			//create an event with a time attribute
-		}
+	 	    if(Match ==  true){
+			    // invoke the rule
+			    //alert("INVOKING RULE: " + i);
+			    //invokeRule(i);
+			    RulesThatShouldBeInvoked.push( i ); 
+			    
+		    }
 	}
-	    
+	return RulesThatShouldBeInvoked;
 }
 
+function newStateSelection( selectObj , DevID){
+	deviceArray[DevID].deviceInitialValue =  selectObj.value ;
+    $( "#dialog-form" ).dialog( "close" );
+    $('#' + DevID).html(deviceArray[DevID].deviceDescription + "<br/> State: " + deviceArray[DevID].deviceInitialValue );
+    NoteEvent( deviceArray[DevID].deviceDescription , deviceArray[DevID].deviceInitialValue );
+    invokeTheseRules( WhatRulesShouldBeInvoked() );  //this is invoked on selection of new state if it is an enum
+};
+
+/* function InvokeRulesConcerning( devID ){
+	//  if the deviceID is inside any rules
+	//loop through each rule
+	for(var i = 0; i < (Rules.length) ; i++){
+		// loop though each trigger device
+		for(var j = 0; j < (Rules[i].ruleRiggerDetails) ; j++){
+		  // if the device ID devID is inside ruleTriigerDetails
+	      if ( Rules[i].ruleRiggerDetails[j][1] == devID ){
+	           alert ( "this device is used in the rule: " +  Rules[i].ruleDescription );
+	      }
+		}
+	}
+};  */
+
+function invokeTheseRules( ArrayOfRuleID ){
+	for( x = 0; x < ArrayOfRuleID.length ; x++ ){
+		invokeRule( ArrayOfRuleID[x]) ;
+	}
+};
+
 $(document).on("click", ".devices", function(){
+	// when a device is clicked its state changes
+	
 	// this id in a variable and use it to address the devs
 	var devID;
 	devID = $(this).attr('id');
 	changeDeviceState( devID );
-	$('#' + devID).effect("highlight", {}, 3000).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
-    UseRules();
+	$('#' + devID).effect("highlight", {}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
+	if (deviceArray[devID].deviceUnit == "ON/OFF" || deviceArray[devID].deviceUnit == "Active/InActive"){
+		invokeTheseRules( WhatRulesShouldBeInvoked() );
+		NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
+	}
+	//NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
+	// invokeTheseRules( WhatRulesShouldBeInvoked() ) will be invoked after selection if the device uses enumeration intead of ON/OFF or Acitive/Inactive
 });
 
 $( "#dialog-form" ).dialog({
     autoOpen: false,
     height: 200,
     width: 300,
-    modal: true});
+    modal: true  
+});   
     
-/* $(".newStateSelector").on('change', function() {
-	latestValue = this.value;
-}); */
-
-function newStateSelection( selectObj , DevID){
-	deviceArray[DevID].deviceInitialValue =  selectObj.value ;
-    $( "#dialog-form" ).dialog( "close" );
-    $('#' + DevID).html(deviceArray[DevID].deviceDescription + "<br/> State: " + deviceArray[DevID].deviceInitialValue );
+function NoteEvent( deviceName, value ){
+	Events.push( new event( eventID, timeStamp() , deviceName, value ));
+	eventID++;
+	//update Jstorage Events
+	$.jStorage.set("Events", Events);
 };
+
+
 
 
 </script>
