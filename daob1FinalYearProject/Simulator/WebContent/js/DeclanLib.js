@@ -32,11 +32,13 @@ function enumeration( EnumName, EnumValues){
 	this.EnumValues = EnumValues;
 }
 
-function event( eventID, timeStamp ,device, value ){
+function event( eventID, timeStamp ,deviceID, deviceName, value, reason ){
    	this.eventID = eventID;
    	this.timeStamp = timeStamp;
-   	this.device = device;
+   	this.deviceID =deviceID;
+   	this.deviceName = deviceName;
    	this.value = value;
+   	this.reason = reason;
 }
 
 function timeStamp() {

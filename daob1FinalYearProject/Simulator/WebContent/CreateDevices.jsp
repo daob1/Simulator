@@ -16,6 +16,7 @@
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/DeclanLib.js"></script>
 
+
 </head>
 <body>
 	<div class="container">
@@ -29,16 +30,15 @@
 					</div>
 					<form class="form-group">
 
-						<label for="inhabitant_name"> Residents Name </label> <input
-							type="text" class="form-control" id="inhabitant_name" name="inhabitant_name"
-							maxlength="25" required/> <label for="care_plan">Care Plan
-						</label> <input type="text" class="form-control" id="care_plan" name="care_plan"
-							maxlength="200" required/> <label for="comment"> Comment </label> <input
-							type="text" class="form-control" id="comment" name="comment" maxlength="200" />
-						<label for="location_description">Location Description </label> <input
-							type="text" class="form-control" id="location_description" name="location_description"
-							maxlength="25" required/>
-
+						<label for="inhabitant_name"> Residents Name </label> 
+						<input type="text" class="form-control" id="inhabitant_name" name="inhabitant_name"
+							maxlength="25" /> 
+							<label for="care_plan">Care Plan </label> 
+							<input type="text" class="form-control" id="care_plan" name="care_plan" maxlength="200" /> 
+							<label for="comment"> Comment </label> 
+							<input type="text" class="form-control" id="comment" name="comment" maxlength="200" />
+						    <label for="location_description">Location Description </label>
+						    <input type="text" class="form-control" id="location_description" name="location_description" maxlength="25" />
 					</form>
 					<div>
 						<button id="more_fields" onclick="add_fields()" type="button"
@@ -169,6 +169,10 @@
 <script>
        //set the variables so they have scope to be used in many functions
        var DeviceCount = $.jStorage.get("DeviceCount");
+       if (DeviceCount == null){
+    	   DeviceCount = 1;
+    	   $.jStorage.set("DeviceCount", DeviceCount);
+	    }
        var inhabitant_name ;
        var care_plan ;
        var comment ;
@@ -229,18 +233,18 @@
 						var done = true;
 						/*  need to count using Device Count and not just .class count because html may be kept depending on the browser. */
 						for (i = 0; i < (DeviceCount); i++) {
-							devDescription = document
+							devDescription = (document
 									.getElementsByClassName("device_forms")[i]
-									.getElementsByTagName("input")[0].value;
-							devUnit = document
+									.getElementsByTagName("input")[0].value).split(' ').join('_');
+							devUnit = (document
 									.getElementsByClassName("device_forms")[i]
-									.getElementsByTagName("select")[0].value;
-							devInitialValue = document
-									.getElementsByName("initalValue")[i].value;
+									.getElementsByTagName("select")[0].value).split(' ').join('_');
+							devInitialValue = (document
+									.getElementsByName("initalValue")[i].value).split(' ').join('_');
 							//the html5 required attribute will not be recognised unless the submit button is clicked in the form
 							// so these fields need to be checked here
 							if ((devDescription == undefined || devDescription == "")
-									|| devInitialValue == "Please Choose"
+									|| devInitialValue == "Please Choose" || devInitialValue == "" || devUnit == ""
 									|| devUnit == "Please Choose") {
 								alert("Please fill in all devices created");
 								done = false;
@@ -314,7 +318,7 @@
 					var values = ArrayOfEnums[e].EnumValues;
 					for ( var v in values){
 					   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
-				       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+				       options = options + ("<option value='" +  value.split(' ').join('_') + "' >" + value + " </option>");
 					}
 				}
 		    }
@@ -361,7 +365,7 @@
 		//alert(JSON.stringify($.jStorage.get("EnumsArray")));
 		
 		var NewOptionName = EnumsArray[EnumsArray.length-1].EnumName;
-		var NewOption =  "<option value=" +  $.trim( NewOptionName ) + " >" + NewOptionName + " </option>";
+		var NewOption =  "<option value='" +  NewOptionName.split(' ').join('_')  + "' >" + NewOptionName.split(' ').join('_') + " </option>";
 		
 		$(".devformunit").append( NewOption );
 		$("#EnumForm").trigger('reset');
@@ -376,7 +380,7 @@
 		
 		    for (var e in  EnumsArray){
 			     name = $.jStorage.get("EnumsArray")[e].EnumName;
-			     $(".devformunit").append("<option value=" +  name + " >" + name + " </option>");
+			     $(".devformunit").append("<option value='" +  name.split(' ').join('_') + "' >" + name.split(' ').join('_') + " </option>");
 		    }
 	}); 
 	

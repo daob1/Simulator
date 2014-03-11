@@ -169,6 +169,11 @@ $(document).on("ready", $(".devSelect"),  function() {
     }  
 	
 var RuleCount = $.jStorage.get("RuleCount");
+if (RuleCount == null || RuleCount == 0){
+	// the rule count to 1 because there is a default form outputted
+	RuleCount = 1;
+	   $.jStorage.set("RuleCount", RuleCount);
+    }
 var RuleForm = $(".rule_form:eq(0)").clone(true);
 var emptyDeviceFormSelect = $( "<label >Select Device</label> " + 
 "<select class='btn btn-default btn-block dropdown-toggle devSelect ruleData'> " + 
@@ -370,7 +375,7 @@ $(document).on("change", (".devSelect"),  function() {
     
 $(document).ready(function() {
 	var Rules = $.jStorage.get("AllRules");
-	if ( Rules == null) {
+	if ( Rules == null || Rules.length == 0) {
 		// no rules have been set before
 		RuleCount = 1;
 		$.jStorage.set("RuleCount", RuleCount);
@@ -389,7 +394,7 @@ $(document).ready(function() {
 			console.log("Rules Desc: " + Rules[i].ruleDescription);
 			console.log("Rule " + [i]);
 			
-			document.getElementsByClassName("desc")[0].value = Rules[i].ruleDescription;
+			document.getElementsByClassName("desc")[i].value = Rules[i].ruleDescription;
 			//$(".rule_form:eq( " + i + " )").find("input").value = Rules[i].ruleDescription;
 			
 			

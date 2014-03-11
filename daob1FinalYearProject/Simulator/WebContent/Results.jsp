@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" import="java.util.*, java.text.*, java.io.*, javax.script.ScriptEngine,
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" import="java.util.*, java.text.*, java.io.*, javax.script.*, 
 javax.script.ScriptEngineManager, javax.script.ScriptException"
+
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
@@ -16,8 +17,9 @@ javax.script.ScriptEngineManager, javax.script.ScriptException"
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/DeclanLib.js"></script>
-<script src="js/jscharts.js"></script>
+<!-- <script src="js/jscharts.js"></script> -->
 
+<script src="js/Chart.js-master/Chart.js"></script>
 
 </head>
 <body>
@@ -30,85 +32,108 @@ javax.script.ScriptEngineManager, javax.script.ScriptException"
 					<a href="Simulation.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a> 
 						<a href="Information.html" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a>
 				</div>
-				<div >
+				<!-- <div >
 				   <button type="button" class="btn btn-primary btn-lg btn-block">Statistics for rules</button>
 				   <button type="button" class="btn btn-primary btn-lg btn-block">Statistics for devices</button>
-				 </div>
+				 </div> -->
 				   <!-- <button type="button" class="btn btn-primary btn-lg btn-block">Large button</button>
 				   <button type="button" class="btn btn-primary btn-lg btn-block">Large button</button> -->
-				<form enctype="multipart/form-data" method="get">
-					<div>
-						<input class="btn btn-primary btn-lg btn-block" type="submit" value="Download Results" onclick="executeTest()" />
-					</div>
-				</form>
+				<form name="myInputForm" action="Results.jsp" method="POST">
+<div id="hidden">
+<input id="myInput" name="myInput" />
+</div>
+<input class="btn btn-primary btn-lg btn-block" type="submit" value="Download Devices">
+</form>
 				<div class="btn-group">
 					
 				</div>
 			</div>
 			<div class="col-md-9">
-				<div class="row jumbotron" id="mainArea" >
-				    <p>Device change state count</p>
-					<div id="chartcontainer1">No results to display
+				<div class=" jumbotron" id="mainArea" >
+				<div class="row">
+				  
+				    <p>Device Change State Count</p>
+				    <canvas id="myChart1" width="700" height="300"></canvas>
+				   
+				    
+				      <p>Device Changes Due To Each Rule</p>
+				       <canvas id="myChart2" width="700" height="300"></canvas>
+				    
+				</div>
+				<div class="row">
+				 <div class=".col-md-3">
+				     <p>Proportion Of Device Changes Due To Human Interaction Vs Rule Invocation</p>
+				     <small>Caused By Rule Invocation.</small>
+				 </div>
+				 <div class=".col-md-6">
+				    <canvas id="myChart3" width="350" height="300"></canvas>
+				   </div>
+				</div>
 					
-					</div>
-					<p>Count Times State Occurred </p>
-					<div id="chartcontainer2">
-					
-					</div>
-					<p>It is encouraged for users to upload your dataset to the <a href="http://www.home-ml.org/Browser">HomeML repository</a>
+					<p>Thank you. It is encouraged for users to upload your dataset to the <a href="http://www.home-ml.org/Browser">HomeML repository</a>
 					</p>
 				</div>
 				
-				    
+ 
 				
 
 
 <script>
 var inhabitant_name = $.jStorage.get("inhabitant_name");
+
+if (inhabitant_name == "" || inhabitant_name == null){
+	inhabitant_name = "John Doe";
+}
 var location_description = $.jStorage.get("location_description");
 var deviceInfo= JSON.stringify($.jStorage.get("allDevices")); 
 
-$("#mainArea").prepend("<p>Statistics for " + inhabitant_name + " in the location " + location_description + "</p>" );
+$("#mainArea").prepend("<p>Statistics for " + inhabitant_name + " in " + location_description + "</p>" );
 
 </script> 
-<%!DateFormat tipe = new SimpleDateFormat("E_k_m");
-Calendar cal = Calendar.getInstance();%>
+
+
+ 
+
 
 <%
 
  	String inhabitant_name1 = "<script>document.writeln(inhabitant_name)</script>";
  	String location_description1 = "<script>document.writeln(location_description)</script>";
- 	String deviceInfo1 = "";
- 	ScriptEngineManager manager = new ScriptEngineManager();
-     ScriptEngine engine = manager.getEngineByName("js");        
-     /* Object result = engine.eval("<script>document.writeln(deviceInfo)</script>");
-    deviceInfo1 = result.toString(); */
- 	out.println(inhabitant_name1);
- 	out.println(location_description1);
- 	out.println("HERE is device information: " +  deviceInfo1);
+ 	String deviceInfo = "<script>document.writeln(deviceInfo)</script>";
+ 	
+ 	
 
-//always give the path from root. This way it almost always works.
-//" + inhabitant_name.toString()  + tipe.toString() + "
-String nameOfTextFile = "C:\\Users\\daob1.CS-DOMAIN\\Downloads\\Devices.json";
-try {   
-    PrintWriter pw = new PrintWriter(new FileOutputStream(nameOfTextFile));
-    pw.println(deviceInfo1.toString());
-    //clean up
-    pw.close();
-} catch(IOException e) {
-   out.println(e.getMessage());
-  
-}
+       if (request.getParameter("myInput") != null){
+       String deviceConfiguration = ( request.getParameter("myInput") );
+ 
+ 
+     int BYTES_DOWNLOAD1 = 1024;
 
-	
-%>  
+     response.setContentType("text/plain");
+     response.setHeader("Content-Disposition", "attachment;filename=deviceConfig.json");
 
+     String s = deviceConfiguration;
+     InputStream input = new ByteArrayInputStream(s.getBytes("UTF8"));
 
+     int read = 0;
+     byte[] bytes = new byte[BYTES_DOWNLOAD1];
+     OutputStream os = response.getOutputStream();
 
-				
+     while ((read = input.read(bytes)) != -1) {
+         os.write(bytes, 0, read);
+     }
+     os.flush();
+     os.close(); 
+       }
+       %>
+			<script> 
+			$(document).ready(function() {
+			var WhatsThat = $("#myInput").val;
+			});
+			$("#myInput")[0].value = (deviceInfo);</script> 
 				<div id="outOfTheWay" class="row">
 					<div class="col-md-2">
-						<div class="panel panel-success">
+						<div class="panel panel-success"> 
 							<div class="panel-heading">
 								<h3>
 									Step 1<span class="glyphicon glyphicon-list-alt"></span>
@@ -176,27 +201,29 @@ try {
 			
 			</div>
 	</div>
-	 <div id="hidden">
-
-</div>
+	
 <script>
 
-//$("#hidden").hide();
+$("#hidden").hide();
 
 
 $(document).ready(function() {
 var devices = $.jStorage.get("allDevices");
 var Events =$.jStorage.get("Events");
 var Enums = $.jStorage.get("EnumsArray");
+var rules = $.jStorage.get("AllRules");
 
-function CountTimeEachStateHappened( DataArray ){
+Enums.push(new enumeration("ON/OFF", ["ON","OFF"]));
+Enums.push(new enumeration("Active/Inactive", ["Active","Inactive"]));
+
+function EachStateHappened( DataArray ){
 	DataArray = new Array();
 	for( var devID in devices ){
 		for( var en in Enums){
 			if( Enums[en].EnumName == devices[devID].deviceUnit ) {
 			  for( var ev in Events){
 			    if ( devices[ devID ].deviceInitialValue ==  Events[ev].value ){
-				     DataArray.push([devices[devID].deviceInitialValue ,  Events[ev].eventID]);
+				     DataArray.push(Events[ev].value);
 			    }
 			  }
 			}
@@ -210,15 +237,52 @@ function CountEventsForAllDevs( DataArray ){
 	for( var devID in devices ){
 		var count = 0;
 		for( var e in Events){
-			if ( devices[ devID ].deviceDescription == Events[e].device ){
+			if ( devices[ devID ].deviceDescription == Events[e].deviceName ){
 				count++;
 			} 
 		}
-		DataArray.push([devices[devID].deviceDescription ,  count]);
+		DataArray.push( count);
 	}
     return DataArray;
 }
-var DeviceData1 = new Array();
+
+function DeviceChangesDueToEachRule( ){
+	DataArray = new Array();
+	for( var ruleID in rules ){
+		var count = 0;
+		for( var e in Events){
+			if (  ruleID  == Events[e].reason ){
+				count++;
+			} 
+		}
+		DataArray.push( count);
+	}
+    return DataArray;
+}
+
+function PorpotionRuleToHumanDeviceChanges(){
+	var humanInteractionCount = 0;
+	var RuleInvokationCount = 0;
+	var RuleIDandCount = new Array();
+	/* for( ruleId in rules){
+		RuleIDandCount.push({ruleId:0});
+	} */
+	for( var ev in Events ){
+		
+		
+		
+			if ( Events[ ev ].reason != "HumanInteraction" && Events[ ev ].reason != "InitialSetting"  ){
+				RuleInvokationCount++;
+				//RuleIDandCount[ Events[ ev ].reason: RuleIDandCount[ Events[ ev ]() ];
+			} else {
+				humanInteractionCount++;
+			}
+		}
+return [RuleInvokationCount, humanInteractionCount];
+}
+    
+
+/* var DeviceData1 = new Array();
 //var myExampleData = new Array([10, 20], [15, 10], [20, 30], [25, 10], [30, 5]);
 CountEventsForAllDevs( DeviceData1 );
 var myData = CountEventsForAllDevs( DeviceData1);
@@ -232,11 +296,83 @@ var DeviceData2 = new Array();
 var myData = CountTimeEachStateHappened( DeviceData2);
 var myChart2 = new JSChart('chartcontainer2', 'bar');
 myChart2.setDataArray(myData);
-myChart2.draw();
+myChart2.draw(); */
+
+var deviceNames = new Array();
+var deviceUnits = new Array();
+var ruleNames = new Array();
+for( devID in devices){
+	deviceNames.push( devices[devID].deviceDescription );
+	deviceUnits.push( devices[devID].deviceUnit );
+}
+for( ruleID in rules){
+	ruleNames.push( rules[ruleID].ruleDescription );
+}
+var devStateCount = CountEventsForAllDevs( devStateCount );
+var data = {
+		labels : deviceNames,
+		datasets : [
+			
+			{
+				fillColor : "rgba(151,187,205,0.5)",
+				strokeColor : "rgba(151,187,205,1)",
+				pointColor : "rgba(151,187,205,1)",
+				pointStrokeColor : "#fff",
+				data : devStateCount
+			}
+		]
+	};
+var ctx = document.getElementById("myChart1").getContext("2d");
+new Chart(ctx).Line(data);
+
+
+
+ResultsArray = new Array();
+ResultsArray = DeviceChangesDueToEachRule();
+var data1 = {
+		labels : ruleNames,
+		datasets : [
+			
+			{
+				fillColor : "rgba(151,187,205,0.5)",
+				strokeColor : "rgba(151,187,205,1)",
+				pointColor : "rgba(151,187,205,1)",
+				pointStrokeColor : "#fff",
+				data : ResultsArray
+			}
+		]
+	};
+var ctx2 = document.getElementById("myChart2").getContext("2d");
+new Chart(ctx2).Line(data1);
+
+
+
+var PorResults = PorpotionRuleToHumanDeviceChanges();
+var data3 = [
+        	{
+        		value: PorResults[0],
+        		color:"#F38630"
+        	},
+        	{
+        		value : PorResults[1],
+        		color : "#E0E4CC"
+        	}
+        		
+        ];
+var ctx3 = document.getElementById("myChart3").getContext("2d");
+new Chart(ctx3).Pie(data3);
+
+
+
+
+
+
+$("small").css("color", "orange");
+
+
+
 
 });
-
-
 </script>
 </body>
 </html>

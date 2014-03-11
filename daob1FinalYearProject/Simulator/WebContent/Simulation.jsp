@@ -23,14 +23,15 @@
 		<div class="row">
 			<div class="col-md-3">
 				<h2>Simulation</h2>
-				<div class="jumbotron">
-                   <p>Click on the devices to change their state and invoke rules you have created.</p>
-                </div>
-                
 				<div class="btn-group">
 					<a href="ConfigureRules.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a> 
 						<a href="Results.jsp" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a>
 				</div>
+				<div class="jumbotron">
+                   <p>Click on the devices to change their state and invoke rules you have created.</p>
+                </div>
+                
+				
 
 				<div id="dialog-form" title="Change State">
 					<p class="validateTips">What state would you like the device to be?.</p>
@@ -148,7 +149,7 @@ for (i=0;i<deviceArray.length;i++)
 var topPosition =  deviceArray[i].devicePositionTop + canvasposition.top;
 var leftPosition = deviceArray[i].devicePositionLeft + canvasposition.left;
 
-	$('#outOfTheWay').append('<div id="' + deviceArray[i].deviceID + '" class="devices btn btn-primary btn-md">' + deviceArray[i].deviceDescription + '<br/> State: ' + deviceArray[i].deviceInitialValue + '</div>');
+	$('#outOfTheWay').append('<div id="' + deviceArray[i].deviceID + '" style="position: absolute" class="devices btn btn-primary btn-md">' + deviceArray[i].deviceDescription + '<br/> State: ' + deviceArray[i].deviceInitialValue + '</div>');
 	$(".devices:eq(" + i + ")").offset({ top: topPosition, left: leftPosition});
 }
 
@@ -165,10 +166,12 @@ $(document).ready(function() {
 	
 	// at the beginning of the simulation we put in an event foreach device
 	for (i=0;i<deviceArray.length;i++){
-		NoteEvent(deviceArray[i].deviceDescription,  deviceArray[i].deviceInitialValue );
+		NoteEvent(deviceArray[i].deviceID  , deviceArray[i].deviceDescription,  deviceArray[i].deviceInitialValue, "InitialSetting" );
 	}
 	
 });
+
+$(".devices").width(150);
 
 function changeDeviceState( devID ){
 	var Unit = deviceArray[devID].deviceUnit;
@@ -197,7 +200,7 @@ function changeDeviceState( devID ){
 					var values = ArrayOfEnums[e].EnumValues;
 					for ( var v in values){
 					   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
-				       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+				       options = options + ("<option value='" +  value + "' >" + value + " </option>");
 					}
 				}
 		    }
@@ -216,7 +219,7 @@ function invokeRule( RuleID ){
 			var devID = OutComes[j][0];
 			deviceArray[devID].deviceInitialValue = OutComes[j][2];
 			$('#' + devID).effect("highlight", {}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
-			NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
+			NoteEvent( deviceArray[devID].deviceID, deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue, RuleID );
 		}
         
 		// create an event with a time attribute
@@ -274,7 +277,7 @@ function newStateSelection( selectObj , DevID){
 	deviceArray[DevID].deviceInitialValue =  selectObj.value ;
     $( "#dialog-form" ).dialog( "close" );
     $('#' + DevID).html(deviceArray[DevID].deviceDescription + "<br/> State: " + deviceArray[DevID].deviceInitialValue );
-    NoteEvent( deviceArray[DevID].deviceDescription , deviceArray[DevID].deviceInitialValue );
+    NoteEvent(deviceArray[DevID].deviceID, deviceArray[DevID].deviceDescription , deviceArray[DevID].deviceInitialValue, "HumanInteraction" );
     invokeTheseRules( WhatRulesShouldBeInvoked() );  //this is invoked on selection of new state if it is an enum
 };
 
@@ -308,7 +311,7 @@ $(document).on("click", ".devices", function(){
 	$('#' + devID).effect("highlight", {}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
 	if (deviceArray[devID].deviceUnit == "ON/OFF" || deviceArray[devID].deviceUnit == "Active/InActive"){
 		invokeTheseRules( WhatRulesShouldBeInvoked() );
-		NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
+		NoteEvent(deviceArray[devID].deviceID, deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue, "HumanInteraction" );
 	}
 	//NoteEvent( deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue );
 	// invokeTheseRules( WhatRulesShouldBeInvoked() ) will be invoked after selection if the device uses enumeration intead of ON/OFF or Acitive/Inactive
@@ -321,8 +324,8 @@ $( "#dialog-form" ).dialog({
     modal: true  
 });   
     
-function NoteEvent( deviceName, value ){
-	Events.push( new event( eventID, timeStamp() , deviceName, value ));
+function NoteEvent( deviceID, deviceName, value, reason ){
+	Events.push( new event( eventID, timeStamp() , deviceID, deviceName, value, reason ));
 	eventID++;
 	//update Jstorage Events
 	$.jStorage.set("Events", Events);

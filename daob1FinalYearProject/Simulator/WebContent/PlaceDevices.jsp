@@ -13,7 +13,7 @@
 
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-  <script src="http://raw.github.com/andris9/jStorage/master/jstorage.js"></script>
+ <!--  <script src="http://raw.github.com/andris9/jStorage/master/jstorage.js"></script> -->
   <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
   <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/DeclanLib.js"></script>
@@ -32,14 +32,8 @@
 					<a id="goToConfigureRules" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a> 
 			    </div>
 				<div id="objectArea" class="jumbotron">
-				<p>Position the devices in the 
-				<script>
-                if ($.jStorage.get("location_description") == null){
-	                 document.write("room");
-	            } else{
-	                 document.write($.jStorage.get("location_description"));
-                } ;
-                </script>
+				<p id="instruction">Position the devices in the 
+				
                </p>
                </div>
 			   <!--  <div id="show">show</div> -->
@@ -121,12 +115,12 @@
 			</div>
 		</div>
 	</div>
-
-
 <script>
     var location_description = $.jStorage.get("location_description");
-    
-    
+    if (location_description == null || location_description == ""){
+    	location_description = "room";
+ 	    $.jStorage.set("location_description", location_description);
+	} 
     
 	$(document)
 			.ready(
@@ -149,16 +143,14 @@
 			            testArray = $.jStorage.get("allDevices");
 			            /* alert(JSON.stringify(testArray)); */
 
+			            //add name location to instruction
+			             $("#instruction").append( " " + location_description);
 			            
 			            for (i=0;i<testArray.length;i++)
 			              { 
 			            	$('#objectArea').append('<div class="draggable-div devices btn btn-primary btn-md">' + testArray[i].deviceDescription + '<br/> State: ' + testArray[i].deviceInitialValue + '</div>');
 			              }
-			           
-			            
-			            
-
-					});
+	});
 
 	$('#myCanvas').droppable({
 		tolerance : 'fit'
@@ -262,6 +254,8 @@
 		 }
 		 
 	});
+	
+	
 </script>
 
 
