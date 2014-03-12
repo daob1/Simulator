@@ -29,7 +29,15 @@
 				</div>
 				<div class="jumbotron">
                    <p>Click on the devices to change their state and invoke rules you have created.</p>
+                   
+                  
                 </div>
+                <div id="RulelogDisplay">
+                   <h3 class="text-center">Last Called Rules</h3>
+                   <ol class="text-center" id="RuleLog" class="list-unstyled">
+                   
+                   </ol>
+                   </div>
                 
 				
 
@@ -156,6 +164,9 @@ var leftPosition = deviceArray[i].devicePositionLeft + canvasposition.left;
 $(".devices").addClass('fixed');
 // the devices have been place
 
+//$("#RulelogDisplay").css('margin-top', 70);
+
+
 //Load the rules
 var Rules = $.jStorage.get("AllRules");
 
@@ -218,8 +229,11 @@ function invokeRule( RuleID ){
 		for(j=0; j < OutComes.length; j++){
 			var devID = OutComes[j][0];
 			deviceArray[devID].deviceInitialValue = OutComes[j][2];
-			$('#' + devID).effect("highlight", {}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
+			$('#' + devID).effect("highlight", {color: 'green'}, 500).html(deviceArray[devID].deviceDescription + "<br/> State: " + deviceArray[devID].deviceInitialValue );
 			NoteEvent( deviceArray[devID].deviceID, deviceArray[devID].deviceDescription , deviceArray[devID].deviceInitialValue, RuleID );
+			
+			//output that the rule was invoked to log
+			AddToLatestRulelog( Rules[RuleID].ruleDescription );
 		}
         
 		// create an event with a time attribute
@@ -331,6 +345,14 @@ function NoteEvent( deviceID, deviceName, value, reason ){
 	$.jStorage.set("Events", Events);
 };
 
+function AddToLatestRulelog( RuleName ){
+	$("#RuleLog").prepend( "<li>" + $.trim(RuleName) + "</li>" );
+	var ChildCount = ($("#RuleLog").children().length)
+	if ( ChildCount > 6){
+		$("#RuleLog li").last().remove();
+	}
+	
+};
 
 
 

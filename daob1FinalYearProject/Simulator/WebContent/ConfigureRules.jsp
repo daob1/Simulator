@@ -165,7 +165,7 @@ $(document).on("ready", $(".devSelect"),  function() {
 	//alert("triggerDeviceFieldset has been loaded");
 	for (i=0;i<devArray.length;i++)
     { 
-		$(".devSelect").append("<option value=" + devArray[i].deviceID + ":" + devArray[i].deviceDescription + "> " + devArray[i].deviceDescription + "</option>");
+		$(".devSelect").append("<option value='" + devArray[i].deviceID + ":" + devArray[i].deviceDescription + "'> " + devArray[i].deviceDescription + "</option>");
     }  
 	
 var RuleCount = $.jStorage.get("RuleCount");
@@ -360,7 +360,7 @@ $(document).on("change", (".devSelect"),  function() {
 						var values = ArrayOfEnums[e].EnumValues; 
 						for ( var v in values){
 						   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
-					       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+					       options = options + ("<option value='" +  $.trim( value ) + "' >" + value + " </option>");
 						}
 					}
 			    }  
@@ -425,7 +425,7 @@ $(document).ready(function() {
 						var values = ArrayOfEnums[e].EnumValues; 
 						for ( var v in values){
 						   var value = $.jStorage.get("EnumsArray")[e].EnumValues[v];
-					       options = options + ("<option value=" +  $.trim( value ) + " >" + value + " </option>");
+					       options = options + ("<option value='" +  $.trim( value ) + "' >" + value + " </option>");
 						}
 					}
 			      }  

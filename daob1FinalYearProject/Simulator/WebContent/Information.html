@@ -6,6 +6,10 @@
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -17,9 +21,13 @@
 			<div class="page-header">
 				<h1>Smart Home Simulator</h1>
 			</div>
-			<p>The main goal of this simulator is to minimise costs and time
-				when deploying a smart environment into the real world.</p>
-			<p>Smart environments are becoming increasingly desired
+			<div id="accordion">
+			    <div>
+			         <p>The main goal of this simulator is to minimise costs and time
+				     when deploying a smart environment into the real world.</p>
+				</div>
+				<div>
+				     <p>Smart environments are becoming increasingly desired
 				especially in the application of creating smart homes to aid the
 				automated care of elderly or disabled people. The older population
 				is the most common to suffer from chronic diseases and general
@@ -27,16 +35,25 @@
 				dramatically in the near future and with life expectancy also
 				increasing it seems logical that medical sensor technology and
 				nursing assisting software are eager to be developed and
-				implemented. The implementation of this technology into a home or
+				implemented. 
+				</p>
+				</div>
+				<div>
+				     <p>The implementation of this technology into a home or
 				similar environment is still in its very early stages. The main motivation
 				for this type of application is that smart environments are very
 				difficult and expensive in term of both money and time, to setup,
-				implement, test, maintain and make usable and maintainable. These
+				implement, test, maintain and make usable. These
 				difficulties can be over-come by making a virtual environment for
 				engineers and researchers interested in smart environments to create
 				virtual trial runs and gather extra data that will hopefully help
 				make real physical implementations of smart environments less error
 				prone and therefore less expensive.</p>
+				</div>
+			</div>
+			
+			
+				
 
 			<a href="CreateDevices.jsp" type="button"
 				class="btn btn-primary btn-lg btn-block">Go to Simulator</a>
@@ -111,5 +128,11 @@
 		</div>
 
 	</div>
+	
+	<script>
+  $(function() {
+    $( "#accordion" ).accordion();
+  });
+  </script>
 </body>
 </html>

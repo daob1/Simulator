@@ -90,7 +90,7 @@
 		         
                  <div>
                  <label>Load Data Set</label>
-						<input type="file" class="form-control" placeholder="Load a data set"></input>
+						<input id="loadFile" type="file" class="form-control" placeholder="Load a data set"></input>
 				</div> 
 				<label>Remove All Current Data</label>
 				<button type="button" class="btn btn-block btn-warning" id="flush"> <span class="glyphicon glyphicon-remove-sign"></span>  Reset </button>
@@ -295,7 +295,10 @@
 		});
 		location.reload();
 	});
-
+ 
+	
+	
+			
 	function removeDevice(btn) {
 		$(btn).parent().parent().slideUp(400, function() {
 			$(btn).parent().parent().remove();
@@ -357,7 +360,7 @@
 		var EnumVals = new Array();
 		// we minus 3 here to take into account the submit input, addd options button and remove option button 
 		for (var x = 1; x < this.length - 3; x++){ 
-			EnumVals.push(this[x].value);
+			EnumVals.push((this[x].value).split(' ').join('_'));
 		}
 		var Enumer = new enumeration( Enumname, EnumVals );
 		EnumsArray.push(Enumer);
