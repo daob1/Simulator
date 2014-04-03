@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" import="java.util.*, java.text.*, java.io.*, javax.script.*, 
-javax.script.ScriptEngineManager, javax.script.ScriptException"
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" import="java.util.*,java.text.*,java.io.*,javax.script.*,javax.script.ScriptEngineManager,javax.script.ScriptException"
 
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -30,19 +29,15 @@ javax.script.ScriptEngineManager, javax.script.ScriptException"
 				<h2>Simulation Results</h2>
 				<div class="btn-group btn-lg btn-block">
 					<a href="Simulation.jsp" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Previous Step</a> 
-						<a href="Information.html" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a>
+					<a href="CreateDevices.jsp" type="button" class="btn btn-lg btn-success ">Done<span class="glyphicon glyphicon-chevron-right"></span></a>
 				</div>
-				<!-- <div >
-				   <button type="button" class="btn btn-primary btn-lg btn-block">Statistics for rules</button>
-				   <button type="button" class="btn btn-primary btn-lg btn-block">Statistics for devices</button>
-				 </div> -->
-				   <!-- <button type="button" class="btn btn-primary btn-lg btn-block">Large button</button>
-				   <button type="button" class="btn btn-primary btn-lg btn-block">Large button</button> -->
+				
 				<form name="myInputForm" action="Results.jsp" method="POST">
 <div id="hidden">
 <input id="myInput" name="myInput" />
 </div>
 <input class="btn btn-primary btn-lg btn-block" type="submit" value="Download Devices">
+<input class="btn btn-primary btn-lg btn-block" type="submit" value="Download Rules">
 </form>
 				<div class="btn-group">
 					
@@ -73,10 +68,6 @@ javax.script.ScriptEngineManager, javax.script.ScriptException"
 					<p>Thank you. It is encouraged for users to upload your dataset to the <a href="http://www.home-ml.org/Browser">HomeML repository</a>
 					</p>
 				</div>
-				
- 
-				
-
 
 <script>
 var inhabitant_name = $.jStorage.get("inhabitant_name");
@@ -91,41 +82,34 @@ $("#mainArea").prepend("<p>Statistics for " + inhabitant_name + " in " + locatio
 
 </script> 
 
-
- 
-
-
 <%
-
  	String inhabitant_name1 = "<script>document.writeln(inhabitant_name)</script>";
  	String location_description1 = "<script>document.writeln(location_description)</script>";
  	String deviceInfo = "<script>document.writeln(deviceInfo)</script>";
- 	
- 	
 
-       if (request.getParameter("myInput") != null){
-       String deviceConfiguration = ( request.getParameter("myInput") );
- 
- 
-     int BYTES_DOWNLOAD1 = 1024;
+ 	if (request.getParameter("myInput") != null) {
+ 		String deviceConfiguration = (request.getParameter("myInput"));
 
-     response.setContentType("text/plain");
-     response.setHeader("Content-Disposition", "attachment;filename=deviceConfig.json");
+ 		int BYTES_DOWNLOAD1 = 1024;
 
-     String s = deviceConfiguration;
-     InputStream input = new ByteArrayInputStream(s.getBytes("UTF8"));
+ 		response.setContentType("text/plain");
+ 		response.setHeader("Content-Disposition",
+ 				"attachment;filename=deviceConfig.json");
 
-     int read = 0;
-     byte[] bytes = new byte[BYTES_DOWNLOAD1];
-     OutputStream os = response.getOutputStream();
+ 		String s = deviceConfiguration;
+ 		InputStream input = new ByteArrayInputStream(s.getBytes("UTF8"));
 
-     while ((read = input.read(bytes)) != -1) {
-         os.write(bytes, 0, read);
-     }
-     os.flush();
-     os.close(); 
-       }
-       %>
+ 		int read = 0;
+ 		byte[] bytes = new byte[BYTES_DOWNLOAD1];
+ 		OutputStream os = response.getOutputStream();
+
+ 		while ((read = input.read(bytes)) != -1) {
+ 			os.write(bytes, 0, read);
+ 		}
+ 		os.flush();
+ 		os.close();
+ 	}
+ %>
 			<script> 
 			$(document).ready(function() {
 			var WhatsThat = $("#myInput").val;
@@ -203,9 +187,9 @@ $("#mainArea").prepend("<p>Statistics for " + inhabitant_name + " in " + locatio
 	</div>
 	
 <script>
-
+//this hidden hides the text area we store the configuration information
+//in so we can load into Java function to download as a file
 $("#hidden").hide();
-
 
 $(document).ready(function() {
 var devices = $.jStorage.get("allDevices");
@@ -264,50 +248,30 @@ function PorpotionRuleToHumanDeviceChanges(){
 	var humanInteractionCount = 0;
 	var RuleInvokationCount = 0;
 	var RuleIDandCount = new Array();
-	/* for( ruleId in rules){
-		RuleIDandCount.push({ruleId:0});
-	} */
 	for( var ev in Events ){
-		
-		
-		
 			if ( Events[ ev ].reason != "HumanInteraction" && Events[ ev ].reason != "InitialSetting"  ){
 				RuleInvokationCount++;
-				//RuleIDandCount[ Events[ ev ].reason: RuleIDandCount[ Events[ ev ]() ];
 			} else {
 				humanInteractionCount++;
 			}
 		}
-return [RuleInvokationCount, humanInteractionCount];
+    return [RuleInvokationCount, humanInteractionCount];
 }
-    
 
-/* var DeviceData1 = new Array();
-//var myExampleData = new Array([10, 20], [15, 10], [20, 30], [25, 10], [30, 5]);
-CountEventsForAllDevs( DeviceData1 );
-var myData = CountEventsForAllDevs( DeviceData1);
-var myChart1 = new JSChart('chartcontainer1', 'bar');
-myChart1.setDataArray(myData);
-myChart1.draw();
-
-var DeviceData2 = new Array();
-//var myExampleData = new Array([10, 20], [15, 10], [20, 30], [25, 10], [30, 5]);
-//OrderEventsHappened( DeviceData2 );
-var myData = CountTimeEachStateHappened( DeviceData2);
-var myChart2 = new JSChart('chartcontainer2', 'bar');
-myChart2.setDataArray(myData);
-myChart2.draw(); */
 
 var deviceNames = new Array();
 var deviceUnits = new Array();
 var ruleNames = new Array();
+//Grab all device information for easy use later
 for( devID in devices){
 	deviceNames.push( devices[devID].deviceDescription );
 	deviceUnits.push( devices[devID].deviceUnit );
 }
+//Grab all rule names for use later
 for( ruleID in rules){
 	ruleNames.push( rules[ruleID].ruleDescription );
 }
+//Chart 1
 var devStateCount = CountEventsForAllDevs( devStateCount );
 var data = {
 		labels : deviceNames,
@@ -326,7 +290,7 @@ var ctx = document.getElementById("myChart1").getContext("2d");
 new Chart(ctx).Line(data);
 
 
-
+//Chart 2
 ResultsArray = new Array();
 ResultsArray = DeviceChangesDueToEachRule();
 var data1 = {
@@ -346,7 +310,7 @@ var ctx2 = document.getElementById("myChart2").getContext("2d");
 new Chart(ctx2).Line(data1);
 
 
-
+//Pie Chart
 var PorResults = PorpotionRuleToHumanDeviceChanges();
 var data3 = [
         	{
@@ -362,15 +326,7 @@ var data3 = [
 var ctx3 = document.getElementById("myChart3").getContext("2d");
 new Chart(ctx3).Pie(data3);
 
-
-
-
-
-
 $("small").css("color", "orange");
-
-
-
 
 });
 </script>

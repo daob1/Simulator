@@ -252,13 +252,8 @@
 		 } else {
 			 alert("Please place all the devices in the space to proceed");
 		 }
-		 
 	});
 	
-	
 </script>
-
-
-	
 </body> 
 	</html>

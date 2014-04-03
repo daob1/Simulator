@@ -289,11 +289,8 @@ $(document).ready(function() {
 			   });
 			 //add in the rule ID, the description , the details for triggers, and the outcomes
 				AllRulesArray.push(new rule([i], ruleDescription, Triggers, Outcome));
-			}
-			/* alert( JSON.stringify(Outcome) ); */
-			
+			}	
 		}
-		/* alert("THIS IS THE AllRULESARRAY" + JSON.stringify( AllRulesArray )); */
 		//if all is ok set the array to the Jstorage and move on to the simulation step
 		if (RulesComplete == true){
 			 $.jStorage.set("AllRules", AllRulesArray);
@@ -369,10 +366,7 @@ $(document).on("change", (".devSelect"),  function() {
 		}
     }); 
     
-/* $(document).on("click", ".hide_toggle_rule_form_btn", function(){
-	$(this).parent().accordion({});
-}); */
-    
+//This action on ready inserts all information from previous rules back into the rule forms
 $(document).ready(function() {
 	var Rules = $.jStorage.get("AllRules");
 	if ( Rules == null || Rules.length == 0) {
@@ -490,13 +484,8 @@ $(document).ready(function() {
 		}
 		
 	}
-	
-	
 	});
-     
-
 });
-
 </script>
 </body>
 </html>

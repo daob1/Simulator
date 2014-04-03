@@ -1,0 +1,1 @@
+This simulator is created using a gloup of JSP files. To run this project you will need to deploy the jsp on an apache tomcat server. The JSP files can be found in the folder WebContent. The Javascript libraries can be found within the js folder.  

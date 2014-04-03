@@ -8,15 +8,12 @@
 <!-- Bootstrap -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 <link href="css/bootstrap.min.css" rel="stylesheet"></link>
-
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
  <!--  Load in JStorage -->
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/jStorage-master/jstorage.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/bootstrap.js"></script>
 <script src="http://cs1.ucc.ie/~daob1/FourthYearProject/daob1FinalYearProject/Simulator/WebContent/js/DeclanLib.js"></script>
-
-
 </head>
 <body>
 	<div class="container">
@@ -25,11 +22,10 @@
 				<div data-spy="scroll" data-target="#">
 					<h2>Create Devices</h2>
 					<div class="btn-group">
-						<a href="Information.html" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Information</a> 
+						<a href="index.html" type="button" class="btn btn-lg btn-info "><span class="glyphicon glyphicon-chevron-left"></span>Information</a> 
 						<button id="Done" type="submit" class="btn btn-lg btn-success " value="Done" >Done<span class="glyphicon glyphicon-chevron-right"></span></button>
 					</div>
 					<form class="form-group">
-
 						<label for="inhabitant_name"> Residents Name </label> 
 						<input type="text" class="form-control" id="inhabitant_name" name="inhabitant_name"
 							maxlength="25" /> 
@@ -44,36 +40,26 @@
 						<button id="more_fields" onclick="add_fields()" type="button"
 							class="btn btn-info btn-block">Add another device</button>
 					</div>
-
 					<div id="device_fields">
                         <div>
 						<form class="form-group device_forms" id="device_form">
 							    <label for="device_description" >Device Description</label> 
 							    <input type="text" class="form-control devform devformdesc" name="device_description" required/> 
 								<label for="device_units">Device Units or State</label>
-
-								
 									<select id="dropdown" class="btn btn-default btn-block dropdown-toggle devform devformunit"
 										name="dropdown" onchange="decision(this)">
 										<option selected disabled>Please Choose</option>
 										<option value="ON/OFF">ON/OFF</option>
 										<option value="Active/InActive">Active/InActive</option>
 										<option disabled >You Can Add Enumerations</option>
-										
 									</select>  
 									<label>Initial Value</label>
 								     <div>
-								     <input  name="initalValue" class="btn btn-default btn-block dropdown-toggle devform devformval required"/>
-								     
+								     <input  name="initalValue" class="btn btn-default btn-block dropdown-toggle devform devformval required"/>		     
 								     </div>
-
 							</form>
                         </div>
-					</div>
-					
-					
-		
-		
+					</div>	
 		<div>
 		<form id=EnumForm >  <label>Create an Enumeration (optional)</label>
 		 <input type="text" placeholder="Name of Enum" class="btn btn-default btn-block dropdown-toggle" required/>
@@ -87,7 +73,6 @@
 		 <input value="Create this Enumeration" class="btn btn-info btn-block" type="submit">
 		</form>
 		</div>	
-		         
                  <div>
                  <label>Load Data Set</label>
 						<input id="loadFile" type="file" class="form-control" placeholder="Load a data set"></input>
@@ -127,8 +112,6 @@
 							</div>
 						</div>
 					</div>
-
-
 					<div class="col-md-2">
 						<div class="panel panel-default">
 							<div class="panel-heading">
@@ -260,21 +243,6 @@
 				}
 			});
 
-	/* $("#show").click(
-			function() {
-
-				alert("Showing you inhabitant_name: " + $.jStorage.get("inhabitant_name"));
-				alert("Showing you care_plan: " + $.jStorage.get("care_plan"));
-				alert("Showing you comment: " + $.jStorage.get("comment"));
-				alert("Showing you location description: " + $.jStorage.get("location_description"));
-				alert("Showing you DeviceCount: " + $.jStorage.get("DeviceCount"));
-				
-				alertArray = new Array();
-		        alertArray = $.jStorage.get("allDevices");
-		        alert(JSON.stringify(alertArray));
-				
-			}); */
-
 	$("#flush").click(function() {
 		//clear JStorage Cashe
 		$.jStorage.flush();
@@ -295,9 +263,6 @@
 		});
 		location.reload();
 	});
- 
-	
-	
 			
 	function removeDevice(btn) {
 		$(btn).parent().parent().slideUp(400, function() {
@@ -328,8 +293,7 @@
 			objDropDown.nextSibling.nextSibling.nextSibling.nextSibling.innerHTML = '<select name="initalValue" class="btn btn-default dropdown-toggle devformval"> '
 			+ options + '</select>'; 
 		}
-	}; 
-
+	};
 
 	//Canvas has a background image to help visualise
 	$(document).ready(function() {
@@ -346,7 +310,6 @@
 		};
 	});
 	
-	
 	$("#EnumForm").on("submit", function (e) {
 		//so the page is not reloaded
 	    e.preventDefault();
@@ -355,7 +318,6 @@
 	    if (EnumsArray == null){
 	    	EnumsArray = [];
 	    }
-		
 		var Enumname = (this[0].value).split(' ').join('_');
 		var EnumVals = new Array();
 		// we minus 3 here to take into account the submit input, addd options button and remove option button 
@@ -380,7 +342,6 @@
 		    if (EnumsArray == null){
 		    	EnumsArray = [];
 		    }
-		
 		    for (var e in  EnumsArray){
 			     name = $.jStorage.get("EnumsArray")[e].EnumName;
 			     $(".devformunit").append("<option value='" +  name.split(' ').join('_') + "' >" + name.split(' ').join('_') + " </option>");
@@ -439,13 +400,6 @@
 				    }
 				
 			});
-	 
-	
-	
-	
 </script>
-
-
-	
 </body>
 </html>

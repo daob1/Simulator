@@ -164,22 +164,16 @@ var leftPosition = deviceArray[i].devicePositionLeft + canvasposition.left;
 $(".devices").addClass('fixed');
 // the devices have been place
 
-//$("#RulelogDisplay").css('margin-top', 70);
-
-
 //Load the rules
 var Rules = $.jStorage.get("AllRules");
-
 
 $(document).ready(function() {
 	// if we start a new simulation
 	$.jStorage.set("Events", (new Array()) );
-	
 	// at the beginning of the simulation we put in an event foreach device
 	for (i=0;i<deviceArray.length;i++){
 		NoteEvent(deviceArray[i].deviceID  , deviceArray[i].deviceDescription,  deviceArray[i].deviceInitialValue, "InitialSetting" );
 	}
-	
 });
 
 $(".devices").width(150);
@@ -235,10 +229,7 @@ function invokeRule( RuleID ){
 			//output that the rule was invoked to log
 			AddToLatestRulelog( Rules[RuleID].ruleDescription );
 		}
-        
 		// create an event with a time attribute
-		
-		
 		//at the end of invoking a rule should i check if more rules are to be invoked?
 		//invokeTheseRules( WhatRulesShouldBeInvoked() );
 		//No because rules should only be carried out only if a person triggered them.
@@ -295,19 +286,6 @@ function newStateSelection( selectObj , DevID){
     invokeTheseRules( WhatRulesShouldBeInvoked() );  //this is invoked on selection of new state if it is an enum
 };
 
-/* function InvokeRulesConcerning( devID ){
-	//  if the deviceID is inside any rules
-	//loop through each rule
-	for(var i = 0; i < (Rules.length) ; i++){
-		// loop though each trigger device
-		for(var j = 0; j < (Rules[i].ruleRiggerDetails) ; j++){
-		  // if the device ID devID is inside ruleTriigerDetails
-	      if ( Rules[i].ruleRiggerDetails[j][1] == devID ){
-	           alert ( "this device is used in the rule: " +  Rules[i].ruleDescription );
-	      }
-		}
-	}
-};  */
 
 function invokeTheseRules( ArrayOfRuleID ){
 	for( x = 0; x < ArrayOfRuleID.length ; x++ ){
@@ -353,9 +331,6 @@ function AddToLatestRulelog( RuleName ){
 	}
 	
 };
-
-
-
 </script>
 </body>
 </html>
